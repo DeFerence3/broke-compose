@@ -1,0 +1,110 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "7503ab0e5aaac2b46ac98ce8bb6899c9",
+    "entities": [
+      {
+        "tableName": "Group",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupName` TEXT NOT NULL, `totalExp` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "groupName",
+            "columnName": "groupName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalExp",
+            "columnName": "totalExp",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Income",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`incTitle` TEXT NOT NULL, `incAmnt` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "incTitle",
+            "columnName": "incTitle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incAmnt",
+            "columnName": "incAmnt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Expense",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expTitle` TEXT NOT NULL, `expAmnt` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "expTitle",
+            "columnName": "expTitle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expAmnt",
+            "columnName": "expAmnt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7503ab0e5aaac2b46ac98ce8bb6899c9')"
+    ]
+  }
+}
