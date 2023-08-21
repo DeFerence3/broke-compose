@@ -1,6 +1,5 @@
 package com.diffy.broke.screens
 
-import AnathorScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,16 +30,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.diffy.broke.GroupEvent
-import com.diffy.broke.GroupState
+import com.diffy.broke.Events
+import com.diffy.broke.States
 import com.diffy.broke.components.AddPackDialog
 import com.diffy.broke.components.CustomAppBar
 import java.text.SimpleDateFormat
@@ -48,20 +56,26 @@ import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackScreen(
-    state: GroupState,
-    onEvent: (GroupEvent) -> Unit
+fun TransactionsScreen(
+    state: States,
+    onEvent: (Events) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val density = LocalDensity.current
+    var itemHeight by remember { mutableStateOf(0.dp) }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CustomAppBar(scrollBehavior, state, onEvent) },
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .onSizeChanged {
+             itemHeight = with(density) { it.height.toDp() }
+        },
+        topBar = { CustomAppBar(scrollBehavior, onEvent) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    onEvent(GroupEvent.ShowDialog)
+                    onEvent(Events.ShowDialog)
                 },
                 content = {
                     Icon(
@@ -76,27 +90,51 @@ fun PackScreen(
         },
     ) { padding ->
 
-        if (state.isCreatingPack) {
+        var isLongPressing by remember { mutableStateOf(false) }
+        var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
+
+        if (state.isCreatingTransaction) {
             AddPackDialog(state = state, onEvent = onEvent)
         }
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                ,
             contentPadding = padding,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+
         ) {
-            items(state.transactions) { transactions ->
+            items(state.transactions) { transaction ->
+
+                DropdownMenu(
+                    expanded = isLongPressing,
+                    onDismissRequest = { isLongPressing = !isLongPressing },
+                    offset = pressOffset.copy(
+                        pressOffset.y - itemHeight
+                    )
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onEvent(Events.DeleteTransaction(transaction))
+                        },
+                        text = { Text(text = "Delete") }
+                    )
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
 
                         }
-                        .pointerInput(Unit){
+                        .pointerInput(Unit) {
                             detectTapGestures(
-                                onLongPress = { onEvent(GroupEvent.DeleteTransaction(transactions)) },
+                                onLongPress = {
+                                    isLongPressing = !isLongPressing
+                                    pressOffset = DpOffset(it.x.toDp(),it.y.toDp())
+                                },
                             )
                         }
                         .background(
@@ -112,7 +150,7 @@ fun PackScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = if (transactions.isExp) {
+                            imageVector = if (transaction.isExp) {
                                 Icons.Default.RemoveCircle
                             } else {
                                 Icons.Default.AddCircle
@@ -122,18 +160,18 @@ fun PackScreen(
                         )
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = transactions.transTitle,
+                                text = transaction.transTitle,
                                 modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp),
                                 style = MaterialTheme.typography.titleLarge,
                             )
                             Text(
-                                text = formatDateFromMilliseconds(transactions.day),
+                                text = formatDateFromMilliseconds(transaction.day),
                                 modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         }
                         Text(
-                            text = "₹" + transactions.transAmnt.toString(),
+                            text = "₹" + transaction.transAmnt.toString(),
                             modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
                             style = MaterialTheme.typography.bodyLarge,
                         )
@@ -142,7 +180,6 @@ fun PackScreen(
             }
         }
     }
-
 }
 
 @SuppressLint("SimpleDateFormat")
@@ -152,19 +189,19 @@ fun formatDateFromMilliseconds(milliseconds: Long): String {
     return dateFormat.format(date)
 }
 
+
 @Composable
 fun Navigations(
     navController: NavHostController,
-    state: GroupState,
-    onEvent: KFunction1<GroupEvent, Unit>,
+    state: States,
+    onEvent: KFunction1<Events, Unit>,
 ) {
-    NavHost(navController = navController, startDestination = "start" ) {
+    NavHost(navController = navController, startDestination = "start") {
         composable("start") {
-            PackScreen(state = state, onEvent = onEvent)
+            TransactionsScreen(state = state, onEvent = onEvent)
         }
         composable("next/{id}") {
-            val argument = it.arguments?.getString("id")
-            AnathorScreen(state = state, onEvent = onEvent, argument = argument)
+
         }
         composable("components") {
 

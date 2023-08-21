@@ -10,20 +10,17 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
-        Group::class,
-        Income::class,
-        Expense::class,
         Transactions::class
     ],
-    version = 5,
+    version = 6,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2, spec = AllDatabase.MigrateTo3::class),
-        AutoMigration(from = 4, to = 5),
+        AutoMigration( from = 1, to = 2, spec = Databases.MigrateTo3::class ),
+        AutoMigration( from = 4, to = 5 ),
     ]
 )
-abstract class AllDatabase: RoomDatabase() {
+abstract class Databases: RoomDatabase() {
 
-    abstract val dao: GroupDao
+    abstract val dao: Dao
 
     @RenameColumn(tableName = "Group", fromColumnName = "groupName", toColumnName = "groupName")
     class MigrateTo3: AutoMigrationSpec
@@ -39,6 +36,14 @@ abstract class AllDatabase: RoomDatabase() {
         val migrate3to4 = object: Migration(3,4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE IF NOT EXISTS transactions (transTitle CHAR NOT NULL, transAmnt INT NOT NULL, isExp BOOLEAN NOT NULL, id INT NOT NULL PRIMARY KEY)")
+            }
+        }
+
+        val migrate5to6 = object: Migration(5,6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("drop table if exists expense")
+                database.execSQL("drop table if exists groups")
+                database.execSQL("drop table if exists income")
             }
         }
     }

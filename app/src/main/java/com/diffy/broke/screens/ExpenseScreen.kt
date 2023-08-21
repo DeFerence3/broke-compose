@@ -1,3 +1,6 @@
+package com.diffy.broke.screens
+
+/*
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -99,7 +102,7 @@ fun AnathorScreen(
                             )
                         }
                         IconButton(onClick = {
-                            onEvent(GroupEvent.DeleteGroup(group))
+                            onEvent(GroupEvent.DeleteTransaction(group))
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
@@ -110,7 +113,8 @@ fun AnathorScreen(
                 }
             }
 
-            /*items(10) { it ->
+            */
+/*items(10) { it ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -142,7 +146,8 @@ fun AnathorScreen(
                         }
                     }
                 }
-            }*/
+            }*//*
+
         }
     }
-}
+}*/

@@ -2,7 +2,7 @@ package com.diffy.broke
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.diffy.broke.database.GroupDao
+import com.diffy.broke.database.Dao
 import com.diffy.broke.database.Transactions
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ViewModel(private val dao: GroupDao): ViewModel() {
+class ViewModel(private val dao: Dao): ViewModel() {
 
-    private val _state = MutableStateFlow(GroupState())
+    private val _state = MutableStateFlow(States())
     private val _orderBy = MutableStateFlow(OrderBy.ASENDING)
     private val _sortBy = MutableStateFlow(SortView.ALL)
 
@@ -52,28 +52,23 @@ class ViewModel(private val dao: GroupDao): ViewModel() {
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    val state = combine(_state, _orderBy, _pack, _sortBy) { state, orderBy, pack, sortBy ->
+    val state = combine(_state, _orderBy, _pack) { state, orderBy, pack ->
         state.copy(
             transactions = pack,
             transactionsOrderBy = orderBy
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), GroupState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), States())
 
-    fun onEvent(event: GroupEvent){
+    fun onEvent(event: Events){
         when (event) {
-            is GroupEvent.DeleteGroup -> {
-                viewModelScope.launch{
-                    dao.deletePack(event.group)
-                }
-            }
-            is GroupEvent.DeleteTransaction -> {
+            is Events.DeleteTransaction -> {
                 viewModelScope.launch {
                     dao.deleteTransaction(event.transactions)
                 }
             }
-            is GroupEvent.CreateGroup -> {
-                val packName = state.value.packName
-                val totalExp = state.value.totalExp
+            is Events.CreateGroup -> {
+                val packName = state.value.transactionName
+                val totalExp = state.value.transactionAmount
                 val isExp = state.value.isExp
 
                 if ( packName.isBlank() ){
@@ -90,52 +85,42 @@ class ViewModel(private val dao: GroupDao): ViewModel() {
                     dao.upsertTransaction(group)
                 }
                 _state.update { it.copy(
-                    isCreatingPack = false,
-                    packName = "",
-                    totalExp = ""
+                    isCreatingTransaction = false,
+                    transactionName = "",
+                    transactionAmount = ""
                 ) }
             }
-            is GroupEvent.HideDialog -> {
+            is Events.HideDialog -> {
                 _state.update { it.copy(
-                    isCreatingPack = false
+                    isCreatingTransaction = false
                 ) }
             }
-            is GroupEvent.ShowDateRangePicker -> {
+            is Events.SetGroupName -> {
                 _state.update { it.copy(
-                    isSelectingDateRange = true
+                    transactionName = event.packName
                 ) }
             }
-            is GroupEvent.HideDateRangePicker -> {
-                _state.update { it.copy(
-                    isSelectingDateRange = false
-                ) }
-            }
-            is GroupEvent.SetGroupName -> {
-                _state.update { it.copy(
-                    packName = event.packName
-                ) }
-            }
-            is GroupEvent.OrderPacks -> {
+            is Events.OrderPacks -> {
                 _orderBy.value = event.orderBy
             }
-            is GroupEvent.SetAmount -> {
+            is Events.SetAmount -> {
                 _state.update { it.copy(
-                    totalExp = event.transAmount
+                    transactionAmount = event.transAmount
                 ) }
             }
-            is GroupEvent.SetExpInc -> {
+            is Events.SetExpInc -> {
                 _state.update { it.copy(
                     isExp = event.isExp
                 ) }
             }
-            is GroupEvent.ShowDialog -> {
+            is Events.ShowDialog -> {
                 _state.update { it.copy(
-                    isCreatingPack = true
+                    isCreatingTransaction = true
                 ) }
             }
 
-            is GroupEvent.SetCurrentTime -> TODO()
-            is GroupEvent.SortViewBy -> {
+            is Events.SetCurrentTime -> TODO()
+            is Events.SortViewBy -> {
                 _sortBy.value = event.sortView
             }
         }

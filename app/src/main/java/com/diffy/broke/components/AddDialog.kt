@@ -20,20 +20,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.diffy.broke.GroupEvent
-import com.diffy.broke.GroupState
+import com.diffy.broke.Events
+import com.diffy.broke.States
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPackDialog(
-    state: GroupState,
-    onEvent: (GroupEvent) -> Unit,
+    state: States,
+    onEvent: (Events) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(
         modifier = modifier,
         onDismissRequest = {
-            onEvent(GroupEvent.HideDialog)
+            onEvent(Events.HideDialog)
         },
         title = { Text(text = "New Transaction") },
         text = {
@@ -47,7 +47,7 @@ fun AddPackDialog(
                     selected = false,
                     onClick = {
                         isExp = !isExp
-                        onEvent(GroupEvent.SetExpInc(isExp))
+                        onEvent(Events.SetExpInc(isExp))
                      },
                     label = { Text(text = if (isExp) "Expense" else "Income") },
                     leadingIcon = {
@@ -59,9 +59,9 @@ fun AddPackDialog(
                 )
 
                 OutlinedTextField(
-                    value = state.packName,
+                    value = state.transactionName,
                     onValueChange = {
-                        onEvent(GroupEvent.SetGroupName(it))
+                        onEvent(Events.SetGroupName(it))
                     },
                     placeholder = {
                         Text(text = "Transaction")
@@ -69,9 +69,9 @@ fun AddPackDialog(
                 )
 
                 OutlinedTextField(
-                    value = state.totalExp,
+                    value = state.transactionAmount,
                     onValueChange = {
-                        onEvent(GroupEvent.SetAmount(it))
+                        onEvent(Events.SetAmount(it))
                     },
                     placeholder = {
                         Text(text = "Amount")
@@ -85,7 +85,7 @@ fun AddPackDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEvent(GroupEvent.CreateGroup)
+                    onEvent(Events.CreateGroup)
                 }
             ) {
                 Text(text = "Add")

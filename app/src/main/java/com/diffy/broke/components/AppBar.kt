@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -28,10 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.rememberDateRangePickerState
-import com.diffy.broke.GroupEvent
-import com.diffy.broke.GroupState
+import com.diffy.broke.Events
 import com.diffy.broke.OrderBy
 import com.diffy.broke.SortView
 
@@ -39,18 +37,13 @@ import com.diffy.broke.SortView
 @Composable
 fun CustomAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
-    state: GroupState,
-    onEvent: (GroupEvent) -> Unit
+    onEvent: (Events) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         var viewAbout by remember { mutableStateOf(false) }
-        val dateRangeState = rememberDateRangePickerState()
-        if (state.isSelectingDateRange) {
-            dateRangePicker(state = state, dateRangeState = dateRangeState, onEvent = onEvent)
-        }
 
         if (viewAbout) AboutDialog(onDismiss = { viewAbout = !viewAbout })
 
@@ -89,16 +82,16 @@ fun CustomAppBar(
             var orderBy by remember { mutableStateOf(true) }
 
             when (selectedSortView) {
-                "All" -> onEvent(GroupEvent.SortViewBy(SortView.ALL))
-                "Income" -> onEvent(GroupEvent.SortViewBy(SortView.INCOME))
-                "Expense" -> onEvent(GroupEvent.SortViewBy(SortView.EXPENSE))
+                "All" -> onEvent(Events.SortViewBy(SortView.ALL))
+                "Income" -> onEvent(Events.SortViewBy(SortView.INCOME))
+                "Expense" -> onEvent(Events.SortViewBy(SortView.EXPENSE))
             }
 
 
             if (orderBy) {
-                onEvent(GroupEvent.OrderPacks(OrderBy.ASENDING))
+                onEvent(Events.OrderPacks(OrderBy.ASENDING))
             } else {
-                onEvent(GroupEvent.OrderPacks(OrderBy.DECENDING))
+                onEvent(Events.OrderPacks(OrderBy.DECENDING))
             }
 
 
@@ -183,7 +176,6 @@ fun CustomAppBar(
                     onClick = {
                         selectedDateRange = "Custom"
                         dateRange = false
-                        onEvent(GroupEvent.ShowDateRangePicker)
                     },
                     text = { Text(text = "Custom") }
                 )
