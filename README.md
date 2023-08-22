@@ -6,7 +6,7 @@ Strictly following Material3 design guidelines
 
 ## ScreenShots
 <p>
-    <img width="200" src="https://github.com/DeFerence3/broke-compose/documentaion/screenshots/AllTransactionsScreenshot.png" alt="all transactions screenshot">
-    <img width="200" src="https://github.com/DeFerence3/broke-compose/documentaion/screenshots/IsCreatingNewTransactionScreenshot.png" alt="creating transaction screenshot">
-    <img width="200" src="https://github.com/DeFerence3/broke-compose/documentaion/screenshots/NoTransactionsScreenshot.png" alt="no transactions screenshot">
+    <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/AllTransactionsScreenshot.png" alt="all transactions screenshot">
+    <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/IsCreatingNewTransactionScreenshot.png" alt="creating transaction screenshot">
+    <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/NoTransactionsScreenshot.png" alt="no transactions screenshot">
 </p>
