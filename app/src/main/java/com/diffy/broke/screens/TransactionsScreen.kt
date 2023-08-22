@@ -97,87 +97,99 @@ fun TransactionsScreen(
             AddPackDialog(state = state, onEvent = onEvent)
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                ,
-            contentPadding = padding,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+        if(state.transactions.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "No transactions", style = MaterialTheme.typography.bodyMedium)
+            }
+        } else {
 
-        ) {
-            items(state.transactions) { transaction ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentPadding = padding,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
 
-                DropdownMenu(
-                    expanded = isLongPressing,
-                    onDismissRequest = { isLongPressing = !isLongPressing },
-                    offset = pressOffset.copy(
-                        pressOffset.y - itemHeight
-                    )
-                ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onEvent(Events.DeleteTransaction(transaction))
-                        },
-                        text = { Text(text = "Delete") }
-                    )
-                }
+            ) {
+                items(state.transactions) { transaction ->
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
+                    DropdownMenu(
+                        expanded = isLongPressing,
+                        onDismissRequest = { isLongPressing = !isLongPressing },
+                        offset = pressOffset.copy(
+                            pressOffset.y - itemHeight
+                        )
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onEvent(Events.DeleteTransaction(transaction))
+                            },
+                            text = { Text(text = "Delete") }
+                        )
+                    }
 
-                        }
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onLongPress = {
-                                    isLongPressing = !isLongPressing
-                                    pressOffset = DpOffset(it.x.toDp(),it.y.toDp())
-                                },
-                            )
-                        }
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(16.dp)
-                        ),
-                ) {
-                    Row(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                            .clickable {
+
+                            }
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = {
+                                        isLongPressing = !isLongPressing
+                                        pressOffset = DpOffset(it.x.toDp(),it.y.toDp())
+                                    },
+                                )
+                            }
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(16.dp)
+                            ),
                     ) {
-                        Icon(
-                            imageVector = if (transaction.isExp) {
-                                Icons.Default.RemoveCircle
-                            } else {
-                                Icons.Default.AddCircle
-                            },
-                            contentDescription = "Expense or income",
-                            modifier = Modifier.padding(16.dp)
-                        )
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = transaction.transTitle,
-                                modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp),
-                                style = MaterialTheme.typography.titleLarge,
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = if (transaction.isExp) {
+                                    Icons.Default.RemoveCircle
+                                } else {
+                                    Icons.Default.AddCircle
+                                },
+                                contentDescription = "Expense or income",
+                                modifier = Modifier.padding(16.dp)
                             )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = transaction.transTitle,
+                                    modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp),
+                                    style = MaterialTheme.typography.titleLarge,
+                                )
+                                Text(
+                                    text = formatDateFromMilliseconds(transaction.day),
+                                    modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
                             Text(
-                                text = formatDateFromMilliseconds(transaction.day),
+                                text = "₹" + transaction.transAmnt.toString(),
                                 modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                         }
-                        Text(
-                            text = "₹" + transaction.transAmnt.toString(),
-                            modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
                     }
                 }
             }
+
         }
     }
 }

@@ -43,8 +43,8 @@ fun CustomAppBar(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        var viewAbout by remember { mutableStateOf(false) }
 
+        var viewAbout by remember { mutableStateOf(false) }
         if (viewAbout) AboutDialog(onDismiss = { viewAbout = !viewAbout })
 
         LargeTopAppBar(
@@ -76,9 +76,7 @@ fun CustomAppBar(
         ) {
 
             var viewSelected by remember { mutableStateOf(false) }
-            var dateRange by remember { mutableStateOf(false) }
             var selectedSortView by remember { mutableStateOf("All") }
-            var selectedDateRange by remember { mutableStateOf("All") }
             var orderBy by remember { mutableStateOf(true) }
 
             when (selectedSortView) {
@@ -162,43 +160,6 @@ fun CustomAppBar(
                         viewSelected = false
                     },
                     text = { Text(text = "Expense") }
-                )
-            }
-
-            DropdownMenu(
-                expanded = dateRange,
-                onDismissRequest = { dateRange = false },
-                modifier = Modifier
-                    .wrapContentSize()
-            ) {
-
-                DropdownMenuItem(
-                    onClick = {
-                        selectedDateRange = "Custom"
-                        dateRange = false
-                    },
-                    text = { Text(text = "Custom") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        selectedDateRange = "Week"
-                        dateRange = false
-                    },
-                    text = { Text(text = "Week") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        selectedDateRange = "Month"
-                        dateRange = false
-                    },
-                    text = { Text(text = "Month") }
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        selectedDateRange = "Year"
-                        dateRange = false
-                    },
-                    text = { Text(text = "Year") }
                 )
             }
         }
