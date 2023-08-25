@@ -1,11 +1,11 @@
 # Broke
 
-A simple expense/income tracker application build using Jetpack Compose. 
+A simple expense/income tracker application build using Jetpack Compose.
 
-Strictly following Material3 design guidelines
+Following Material3 design guidelines
 
 ## ScreenShots
-<p>
+<p align="center">
     <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/AllTransactionsScreenshot.png" alt="all transactions screenshot">
     <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/IsCreatingNewTransactionScreenshot.png" alt="creating transaction screenshot">
     <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/NoTransactionsScreenshot.png" alt="no transactions screenshot">
