@@ -2,23 +2,36 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0157f89b297d0747856d00163202407e",
+    "identityHash": "d950ef27d83684f08a81be2de91b13d5",
     "entities": [
       {
-        "tableName": "Group",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupName` TEXT NOT NULL, `totalExp` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "tableName": "Transactions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transTitle` TEXT NOT NULL, `transAmnt` INTEGER NOT NULL, `isExp` INTEGER NOT NULL, `day` INTEGER NOT NULL DEFAULT 0, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
-            "fieldPath": "groupName",
-            "columnName": "groupName",
+            "fieldPath": "transTitle",
+            "columnName": "transTitle",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "totalExp",
-            "columnName": "totalExp",
-            "affinity": "TEXT",
+            "fieldPath": "transAmnt",
+            "columnName": "transAmnt",
+            "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "isExp",
+            "columnName": "isExp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "day",
+            "columnName": "day",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "id",
@@ -40,7 +53,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0157f89b297d0747856d00163202407e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd950ef27d83684f08a81be2de91b13d5')"
     ]
   }
 }

@@ -70,6 +70,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 val packName = state.value.transactionName
                 val totalExp = state.value.transactionAmount
                 val isExp = state.value.isExp
+                val transactionDateInMillis = state.value.transactionDateInMillis
 
                 if ( packName.isBlank() ){
                     return
@@ -79,7 +80,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     transTitle = packName,
                     transAmnt = totalExp.toInt(),
                     isExp = isExp,
-                    day = System.currentTimeMillis()
+                    day = transactionDateInMillis
                 )
                 viewModelScope.launch {
                     dao.upsertTransaction(group)
@@ -119,7 +120,11 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 ) }
             }
 
-            is Events.SetCurrentTime -> TODO()
+            is Events.SetCurrentTime -> {
+                _state.update { it.copy(
+                    transactionDateInMillis = event.time
+                ) }
+            }
             is Events.SortViewBy -> {
                 _sortBy.value = event.sortView
             }

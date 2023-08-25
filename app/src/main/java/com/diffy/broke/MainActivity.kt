@@ -8,20 +8,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.diffy.broke.database.Databases
-import com.diffy.broke.screens.Navigations
+import com.diffy.broke.screens.TransactionsScreen
 import com.diffy.broke.ui.theme.BrokeTheme
 
+@Suppress("UNCHECKED_CAST")
 class MainActivity : ComponentActivity() {
 
     private val db by lazy {
         Room.databaseBuilder(
             applicationContext,
             Databases::class.java,
-            "pack.db"
-        ).addMigrations(Databases.migrate2to3,Databases.migrate3to4,Databases.migrate5to6).build()
+            "broke.db"
+        ).build()
     }
 
     private val viewmodel by viewModels<com.diffy.broke.ViewModel> (
@@ -38,10 +38,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BrokeTheme {
-                // A surface container using the 'background' color from the theme
                 val state by viewmodel.state.collectAsState()
-                val navController = rememberNavController()
-                Navigations(navController = navController,state = state, onEvent = viewmodel::onEvent )
+                TransactionsScreen(state = state, onEvent = viewmodel::onEvent)
             }
         }
     }

@@ -49,16 +49,12 @@ fun CustomAppBar(
 
         LargeTopAppBar(
             title = {
-                Text(
-                    text = "Broke",
-                )
+                Text( text = "Broke")
             },
             scrollBehavior = scrollBehavior,
             actions = {
                 IconButton(
-                    onClick = {
-                        viewAbout = !viewAbout
-                    },
+                    onClick = { viewAbout = !viewAbout }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
@@ -84,7 +80,6 @@ fun CustomAppBar(
                 "Income" -> onEvent(Events.SortViewBy(SortView.INCOME))
                 "Expense" -> onEvent(Events.SortViewBy(SortView.EXPENSE))
             }
-
 
             if (orderBy) {
                 onEvent(Events.OrderPacks(OrderBy.ASENDING))
@@ -121,9 +116,7 @@ fun CustomAppBar(
 
             FilterChip(
                 selected = false,
-                onClick = {
-                    orderBy = !orderBy
-                },
+                onClick = { orderBy = !orderBy },
                 label = { Text(text = if (orderBy) "ASC" else "DESC") },
                 leadingIcon = {
                     Icon(
@@ -136,7 +129,7 @@ fun CustomAppBar(
 
             DropdownMenu(
                 expanded = viewSelected,
-                onDismissRequest = { viewSelected = false },
+                onDismissRequest = { viewSelected = !viewSelected },
                 modifier = Modifier
                     .wrapContentSize()
             ) {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
@@ -35,7 +36,8 @@ fun AboutDialog(
         title = { Text(text = "About Broke") },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 val context = LocalContext.current
@@ -55,9 +57,17 @@ fun AboutDialog(
                     Text(text = "DeFerence3/broke-compose")
                 }
                 HorizontalDivider()
-                Text(text = "Broke\n" +
-                        "Stable\n" +
-                        "v1.0.0")
+                Row (
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text("Broke")
+                    Text("Stable")
+                    Text("v0.1.3beta")
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
             }
         },
         confirmButton = {

@@ -9,5 +9,6 @@ data class States(
     val isExp: Boolean = true,
     val isSelectingDateRange: Boolean = false,
     val isCreatingTransaction: Boolean = false,
+    val transactionDateInMillis: Long = 0,
     val transactionsOrderBy: OrderBy = OrderBy.ASENDING,
 )
