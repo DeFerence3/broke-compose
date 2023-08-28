@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.diffy.broke"
-        minSdk 27
+        minSdk 26
         targetSdk 34
         versionCode 2
         versionName "1.1.0"
@@ -35,7 +35,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
