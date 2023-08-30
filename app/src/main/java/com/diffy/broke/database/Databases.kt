@@ -1,5 +1,6 @@
 package com.diffy.broke.database
 
+import android.content.Context
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
@@ -12,4 +13,8 @@ import androidx.room.RoomDatabase
 abstract class Databases: RoomDatabase() {
 
     abstract val dao: Dao
+
+    companion object {
+
+    }
 }

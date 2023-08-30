@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.diffy.broke.Events
 import com.diffy.broke.OrderBy
 import com.diffy.broke.SortView
@@ -37,7 +38,8 @@ import com.diffy.broke.SortView
 @Composable
 fun CustomAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
-    onEvent: (Events) -> Unit
+    onEvent: (Events) -> Unit,
+    navController: NavHostController
 ) {
     Column(
         modifier = Modifier
@@ -45,6 +47,7 @@ fun CustomAppBar(
     ) {
 
         var viewAbout by remember { mutableStateOf(false) }
+        var isMenuExpanded by remember { mutableStateOf(false) }
         if (viewAbout) AboutDialog(onDismiss = { viewAbout = !viewAbout })
 
         LargeTopAppBar(
@@ -54,15 +57,39 @@ fun CustomAppBar(
             scrollBehavior = scrollBehavior,
             actions = {
                 IconButton(
-                    onClick = { viewAbout = !viewAbout }
+                    onClick = { isMenuExpanded = !isMenuExpanded }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "Info"
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More Options"
                     )
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = !isMenuExpanded },
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Backup")
+                            },
+                            onClick = {
+                                navController.navigate("backup-page")
+                                isMenuExpanded = !isMenuExpanded
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text("About")
+                            },
+                            onClick = {
+                                viewAbout = !viewAbout
+                                isMenuExpanded = !isMenuExpanded
+                            },
+                        )
+                    }
                 }
             }
         )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,7 +114,6 @@ fun CustomAppBar(
                 onEvent(Events.OrderPacks(OrderBy.DECENDING))
             }
 
-
             FilterChip(
                 selected = viewSelected,
                 onClick = { viewSelected = !viewSelected },
@@ -100,19 +126,6 @@ fun CustomAppBar(
                     )
                 }
             )
-
-            /*FilterChip(
-                selected = false,
-                onClick = { dateRange = !dateRange },
-                label = { Text(text = selectedDateRange) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.DateRange,
-                        contentDescription = "Date Range",
-                        modifier = Modifier.size(FilterChipDefaults.IconSize)
-                    )
-                }
-            )*/
 
             FilterChip(
                 selected = false,

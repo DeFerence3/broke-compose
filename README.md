@@ -13,4 +13,3 @@ Following Material3 design guidelines
 
 ## TODO
 - [ ] Edit Option for each transaction
-- [ ] Backup Option

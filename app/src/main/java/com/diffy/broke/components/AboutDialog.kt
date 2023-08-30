@@ -65,7 +65,7 @@ fun AboutDialog(
                     Spacer(modifier = Modifier.width(10.dp))
                     Text("Broke")
                     Text("Stable")
-                    Text("v1.1.0")
+                    Text("v1.2.0")
                     Spacer(modifier = Modifier.width(10.dp))
                 }
             }

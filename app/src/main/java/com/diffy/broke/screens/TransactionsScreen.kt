@@ -23,11 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.diffy.broke.Events
 import com.diffy.broke.States
 import com.diffy.broke.components.AddPackDialog
 import com.diffy.broke.components.CustomAppBar
 import com.diffy.broke.components.TransactionItem
+import com.diffy.broke.database.Databases
+import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -35,7 +40,8 @@ import java.util.Date
 @Composable
 fun TransactionsScreen(
     state: States,
-    onEvent: (Events) -> Unit
+    onEvent: (Events) -> Unit,
+    navController: NavHostController
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -43,7 +49,7 @@ fun TransactionsScreen(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CustomAppBar(scrollBehavior, onEvent) },
+        topBar = { CustomAppBar(scrollBehavior, onEvent, navController) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
@@ -75,7 +81,6 @@ fun TransactionsScreen(
                 Text(text = "No transactions", style = MaterialTheme.typography.bodyMedium)
             }
         } else {
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
