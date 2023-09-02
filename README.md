@@ -10,6 +10,3 @@ Following Material3 design guidelines
     <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/IsCreatingNewTransactionScreenshot.png" alt="creating transaction screenshot">
     <img width="200" src="https://github.com/DeFerence3/broke-compose/blob/main/documentaion/screenshots/NoTransactionsScreenshot.png" alt="no transactions screenshot">
 </p>
-
-## TODO
-- [ ] Edit Option for each transaction
