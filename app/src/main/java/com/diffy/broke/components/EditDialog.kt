@@ -38,56 +38,56 @@ import com.diffy.broke.helpers.DateInMillisToFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPackDialog(
+fun EditPackDialog(
     state: States,
     onEvent: (Events) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = state.transactionDateInMillis
+    )
     var showDialog by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = selectedDate
-    )
 
-    if (showDialog) {
-            selectedDate = DatePickerScreen(
-                datePickerState = datePickerState,
-                onShowDialogChange = { showDialog = it }
-            )
+    if (showDialog){
+        selectedDate = DatePickerScreen(
+            datePickerState = datePickerState,
+            onShowDialogChange = { showDialog = it }
+        )
     }
 
     AlertDialog(
         modifier = modifier,
         onDismissRequest = {
-            onEvent(Events.HideAddDialog)
+            onEvent(Events.HideEditDialog)
         },
-        title = { Text(text = "New Transaction") },
+        title = { Text(text = "Edit Transaction") },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                var isExp by remember { mutableStateOf(true) }
+                var isExp by remember { mutableStateOf(state.isExp) }
                 onEvent(Events.SetExpInc(isExp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+
                     FilterChip(
                         selected = false,
                         onClick = {
-                                  showDialog = !showDialog
-                         },
-                        label = { Text(text = DateInMillisToFormat(selectedDate)) },
+                            showDialog = !showDialog
+                        },
+                        label = { Text(text = DateInMillisToFormat(datePickerState.selectedDateMillis)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Filled.EditCalendar,
                                 contentDescription = "Date",
                             )
                         },
-
                     )
                     FilterChip(
                         selected = false,
@@ -106,6 +106,7 @@ fun AddPackDialog(
                         )
                     )
                 }
+
                 OutlinedTextField(
                     value = state.transactionName,
                     leadingIcon = {
@@ -153,8 +154,8 @@ fun AddPackDialog(
                     onEvent(Events.CreateTransaction)
                 }
             ) {
-                Text(text = "Add")
+                Text(text = "Edit")
             }
         },
-    ) 
+    )
 }

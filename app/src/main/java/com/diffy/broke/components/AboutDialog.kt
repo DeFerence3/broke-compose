@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.diffy.broke.R
@@ -57,8 +58,9 @@ fun AboutDialog(
                     Text(text = "DeFerence3/broke-compose")
                 }
                 HorizontalDivider()
+                Spacer(modifier = Modifier.width(10.dp))
                 Row (
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    horizontalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) {
@@ -68,6 +70,7 @@ fun AboutDialog(
                     Text("v1.2.0")
                     Spacer(modifier = Modifier.width(10.dp))
                 }
+                Spacer(modifier = Modifier.width(10.dp))
             }
         },
         confirmButton = {
@@ -80,4 +83,10 @@ fun AboutDialog(
             }
         },
     )
+}
+
+@Preview
+@Composable
+fun AboutDialogPreview() {
+    AboutDialog(onDismiss = { /*TODO*/ })
 }

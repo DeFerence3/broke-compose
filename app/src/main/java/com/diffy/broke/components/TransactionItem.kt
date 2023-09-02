@@ -61,27 +61,27 @@ fun TransactionItem(
             .background(
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(16.dp)
-            ),
+            )
+            .indication(interactionSource, LocalIndication.current)
+            .pointerInput(true) {
+                detectTapGestures(
+                    onLongPress = {
+                        isMenuVisible = !isMenuVisible
+                        pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
+                    },
+                    onPress = {
+                        val press = PressInteraction.Press(it)
+                        interactionSource.emit(press)
+                        tryAwaitRelease()
+                        interactionSource.emit(PressInteraction.Release(press))
+                    }
+                )
+            },
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-                .indication(interactionSource, LocalIndication.current)
-                .pointerInput(true) {
-                    detectTapGestures(
-                        onLongPress = {
-                            isMenuVisible = !isMenuVisible
-                            pressOffset = DpOffset(it.x.toDp(), it.y.toDp())
-                        },
-                        onPress = {
-                            val press = PressInteraction.Press(it)
-                            interactionSource.emit(press)
-                            tryAwaitRelease()
-                            interactionSource.emit(PressInteraction.Release(press))
-                        }
-                    )
-                },
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -119,6 +119,12 @@ fun TransactionItem(
         ) {
             DropdownMenuItem(
                 onClick = {
+                    onEvent(Events.SetId(transaction.id))
+                    onEvent(Events.SetTransactionName(transaction.transTitle))
+                    onEvent(Events.SetTransactionDate(transaction.day))
+                    onEvent(Events.SetAmount(transaction.transAmnt.toString()))
+                    onEvent(Events.SetExpInc(transaction.isExp))
+                    onEvent(Events.ShowEditDialog)
                     isMenuVisible = !isMenuVisible
                 },
                 text = { Text(text = "Edit" ) }

@@ -24,15 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.diffy.broke.Events
 import com.diffy.broke.States
 import com.diffy.broke.components.AddPackDialog
 import com.diffy.broke.components.CustomAppBar
+import com.diffy.broke.components.EditPackDialog
 import com.diffy.broke.components.TransactionItem
-import com.diffy.broke.database.Databases
-import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -53,7 +50,7 @@ fun TransactionsScreen(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    onEvent(Events.ShowDialog)
+                    onEvent(Events.ShowAddDialog)
                 },
                 content = {
                     Icon(
@@ -69,6 +66,9 @@ fun TransactionsScreen(
 
         if (state.isCreatingTransaction) {
             AddPackDialog(state = state, onEvent = onEvent)
+        }
+        if (state.isEditingTransaction) {
+            EditPackDialog(state = state, onEvent = onEvent)
         }
 
         if(state.transactions.isEmpty()) {

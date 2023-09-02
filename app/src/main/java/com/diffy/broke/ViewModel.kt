@@ -66,37 +66,40 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     dao.deleteTransaction(event.transactions)
                 }
             }
-            is Events.CreateGroup -> {
+            is Events.CreateTransaction -> {
                 val packName = state.value.transactionName
                 val totalExp = state.value.transactionAmount
                 val isExp = state.value.isExp
                 val transactionDateInMillis = state.value.transactionDateInMillis
+                val id = state.value.id
 
                 if ( packName.isBlank() ){
                     return
                 }
 
-                val group = Transactions(
+                val transaction = Transactions(
                     transTitle = packName,
                     transAmnt = totalExp.toInt(),
                     isExp = isExp,
-                    day = transactionDateInMillis
+                    day = transactionDateInMillis,
+                    id = id
                 )
                 viewModelScope.launch {
-                    dao.upsertTransaction(group)
+                    dao.upsertTransaction(transaction)
                 }
                 _state.update { it.copy(
                     isCreatingTransaction = false,
+                    isEditingTransaction = false,
                     transactionName = "",
                     transactionAmount = ""
                 ) }
             }
-            is Events.HideDialog -> {
+            is Events.HideAddDialog -> {
                 _state.update { it.copy(
                     isCreatingTransaction = false
                 ) }
             }
-            is Events.SetGroupName -> {
+            is Events.SetTransactionName -> {
                 _state.update { it.copy(
                     transactionName = event.packName
                 ) }
@@ -114,19 +117,36 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     isExp = event.isExp
                 ) }
             }
-            is Events.ShowDialog -> {
+            is Events.ShowAddDialog -> {
                 _state.update { it.copy(
                     isCreatingTransaction = true
                 ) }
             }
 
-            is Events.SetCurrentTime -> {
+            is Events.SetTransactionDate -> {
                 _state.update { it.copy(
                     transactionDateInMillis = event.time
                 ) }
             }
             is Events.SortViewBy -> {
                 _sortBy.value = event.sortView
+            }
+
+            Events.HideEditDialog -> {
+                _state.update { it.copy(
+                    isEditingTransaction = false
+                ) }
+            }
+            Events.ShowEditDialog -> {
+                _state.update { it.copy(
+                    isEditingTransaction = true
+                ) }
+            }
+
+            is Events.SetId -> {
+                _state.update { it.copy(
+                    id = event.id
+                ) }
             }
         }
     }

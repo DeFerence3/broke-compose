@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.MainActivity
-import com.diffy.broke.components.RestartDialog
 import com.diffy.broke.database.Databases
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 
@@ -31,7 +30,6 @@ import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 fun BackupPage(db: Databases, backup: RoomBackup) {
 
     val context = LocalContext.current
-
 
     Scaffold(
         modifier = Modifier

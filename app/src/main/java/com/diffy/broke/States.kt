@@ -7,8 +7,10 @@ data class States(
     val transactionName: String = "",
     val transactionAmount: String = "",
     val isExp: Boolean = true,
+    val id: Int = 0,
     val isSelectingDateRange: Boolean = false,
     val isCreatingTransaction: Boolean = false,
+    val isEditingTransaction: Boolean = false,
     val transactionDateInMillis: Long = 0,
     val transactionsOrderBy: OrderBy = OrderBy.ASENDING,
 )
