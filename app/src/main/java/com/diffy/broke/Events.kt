@@ -17,5 +17,6 @@ sealed interface Events {
     data class OrderPacks(val orderBy: OrderBy): Events
     data class DeleteTransaction(val transactions: Transactions): Events
     data class SortViewBy(val sortView: SortView): Events
+    data class DateRangeBy(val dateRange: DateRange): Events
     data class SetId(val id: Int) : Events
 }

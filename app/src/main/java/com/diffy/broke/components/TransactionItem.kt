@@ -112,6 +112,7 @@ fun TransactionItem(
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
+
         DropdownMenu(
             expanded = isMenuVisible,
             onDismissRequest = { isMenuVisible = !isMenuVisible },
@@ -139,4 +140,3 @@ fun TransactionItem(
         }
     }
 }
-

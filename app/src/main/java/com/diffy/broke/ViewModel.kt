@@ -18,6 +18,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
     private val _state = MutableStateFlow(States())
     private val _orderBy = MutableStateFlow(OrderBy.ASENDING)
     private val _sortBy = MutableStateFlow(SortView.ALL)
+    private val _dateRangeBy = MutableStateFlow(DateRange.ALLDAY)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _pack = _sortBy
@@ -52,7 +53,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    val state = combine(_state, _orderBy, _pack) { state, orderBy, pack ->
+    val state = combine(_state, _orderBy, _pack, _dateRangeBy) { state, orderBy, pack, _ ->
         state.copy(
             transactions = pack,
             transactionsOrderBy = orderBy
@@ -147,6 +148,10 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 _state.update { it.copy(
                     id = event.id
                 ) }
+            }
+
+            is Events.DateRangeBy -> {
+                _dateRangeBy.value = event.dateRange
             }
         }
     }

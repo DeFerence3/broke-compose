@@ -84,9 +84,3 @@ fun AboutDialog(
         },
     )
 }
-
-@Preview
-@Composable
-fun AboutDialogPreview() {
-    AboutDialog(onDismiss = { /*TODO*/ })
-}

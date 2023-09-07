@@ -47,13 +47,13 @@ fun EditPackDialog(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = state.transactionDateInMillis
     )
-    var showDialog by remember { mutableStateOf(false) }
+    var showDatePickerDialog by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) }
 
-    if (showDialog){
+    if (showDatePickerDialog){
         selectedDate = DatePickerScreen(
             datePickerState = datePickerState,
-            onShowDialogChange = { showDialog = it }
+            onShowDialogChange = { showDatePickerDialog = it }
         )
     }
 
@@ -79,7 +79,7 @@ fun EditPackDialog(
                     FilterChip(
                         selected = false,
                         onClick = {
-                            showDialog = !showDialog
+                            showDatePickerDialog = !showDatePickerDialog
                         },
                         label = { Text(text = DateInMillisToFormat(datePickerState.selectedDateMillis)) },
                         leadingIcon = {

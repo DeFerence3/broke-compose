@@ -32,4 +32,10 @@ interface Dao {
 
     @Query("SELECT * FROM `transactions` WHERE isExp = '1' ORDER BY transAmnt ASC")
     fun getExpenseOrderByMost(): Flow<List<Transactions>>
+
+    @Query("SELECT * FROM `transactions` WHERE day BETWEEN :start AND :end ORDER BY transAmnt DESC")
+    fun getTransactionsOrderByLeastOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
+
+    @Query("SELECT * FROM `transactions` WHERE day BETWEEN :start AND :end ORDER BY transAmnt ASC")
+    fun getTransactionsOrderByMostOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 }
