@@ -4,11 +4,11 @@ import com.diffy.broke.database.Transactions
 
 sealed interface Events {
 
-    object CreateTransaction: Events
-    object ShowAddDialog: Events
-    object HideAddDialog: Events
-    object ShowEditDialog: Events
-    object HideEditDialog: Events
+    data object CreateTransaction: Events
+    data object ShowAddDialog: Events
+    data object HideAddDialog: Events
+    data object ShowEditDialog: Events
+    data object HideEditDialog: Events
 
     data class SetTransactionName(val packName: String): Events
     data class SetAmount(val transAmount: String): Events
@@ -18,5 +18,7 @@ sealed interface Events {
     data class DeleteTransaction(val transactions: Transactions): Events
     data class SortViewBy(val sortView: SortView): Events
     data class DateRangeBy(val dateRange: DateRange): Events
+    data class SetStartDateInMillis(val startDateInMillis: Long): Events
+    data class SetEndDateInMillis(val endDateInMillis: Long): Events
     data class SetId(val id: Int) : Events
 }

@@ -13,4 +13,7 @@ data class States(
     val isEditingTransaction: Boolean = false,
     val transactionDateInMillis: Long = 0,
     val transactionsOrderBy: OrderBy = OrderBy.ASENDING,
+    val transactionsDateRange: DateRange = DateRange.ALLDAY,
+    var startDateInMillis: Long = System.currentTimeMillis(),
+    var endDateInMillis: Long = System.currentTimeMillis()
 )

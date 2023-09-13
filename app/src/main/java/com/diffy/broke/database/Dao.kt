@@ -16,26 +16,38 @@ interface Dao {
     suspend fun deleteTransaction(transactions: Transactions) : Void
 
     @Query("SELECT * FROM `transactions` ORDER BY transAmnt ASC ")
-    fun getTransactionsOrderByMost(): Flow<List<Transactions>>
+    fun getTransactionsOrderByAscend(): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` ORDER BY transAmnt DESC")
-    fun getTransactionsOrderByLeast(): Flow<List<Transactions>>
+    fun getTransactionsOrderByDescend(): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` WHERE isExp = '0' ORDER BY transAmnt DESC")
-    fun getIncomeOrderByLeast(): Flow<List<Transactions>>
+    fun getIncomeOrderByDescend(): Flow<List<Transactions>>
+
+    @Query("SELECT * FROM `transactions` WHERE isExp = '0' and day BETWEEN :start AND :end ORDER BY transAmnt DESC")
+    fun getIncomeOrderByDescendOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` WHERE isExp = '1' ORDER BY transAmnt DESC")
-    fun getExpenseOrderByLeast(): Flow<List<Transactions>>
+    fun getExpenseOrderByDescend(): Flow<List<Transactions>>
+
+    @Query("SELECT * FROM `transactions` WHERE isExp = '1' and day BETWEEN :start AND :end ORDER BY transAmnt DESC")
+    fun getExpenseOrderByDescendOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` WHERE isExp = '0' ORDER BY transAmnt ASC")
-    fun getIncomeOrderByMost(): Flow<List<Transactions>>
+    fun getIncomeOrderByAscend(): Flow<List<Transactions>>
+
+    @Query("SELECT * FROM `transactions` WHERE isExp = '0' and day BETWEEN :start AND :end ORDER BY transAmnt ASC")
+    fun getIncomeOrderByAscendOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` WHERE isExp = '1' ORDER BY transAmnt ASC")
-    fun getExpenseOrderByMost(): Flow<List<Transactions>>
+    fun getExpenseOrderByAscend(): Flow<List<Transactions>>
+
+    @Query("SELECT * FROM `transactions` WHERE isExp = '1' and day BETWEEN :start AND :end ORDER BY transAmnt ASC")
+    fun getExpenseOrderByAscendOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` WHERE day BETWEEN :start AND :end ORDER BY transAmnt DESC")
-    fun getTransactionsOrderByLeastOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
+    fun getTransactionsOrderByDescendOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 
     @Query("SELECT * FROM `transactions` WHERE day BETWEEN :start AND :end ORDER BY transAmnt ASC")
-    fun getTransactionsOrderByMostOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
+    fun getTransactionsOrderByAscendOnDateRange(start: Long, end: Long): Flow<List<Transactions>>
 }

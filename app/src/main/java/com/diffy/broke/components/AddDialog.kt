@@ -23,6 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,8 +34,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.Events
 import com.diffy.broke.States
-import com.diffy.broke.helpers.DatePickerScreen
-import com.diffy.broke.helpers.DateInMillisToFormat
+import com.diffy.broke.helpers.datePickerScreen
+import com.diffy.broke.helpers.dateInMillisToFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,13 +46,13 @@ fun AddPackDialog(
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) }
+    var selectedDate by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDate
     )
 
     if (showDialog) {
-            selectedDate = DatePickerScreen(
+            selectedDate = datePickerScreen(
                 datePickerState = datePickerState,
                 onShowDialogChange = { showDialog = it }
             )
@@ -80,7 +81,7 @@ fun AddPackDialog(
                         onClick = {
                                   showDialog = !showDialog
                          },
-                        label = { Text(text = DateInMillisToFormat(selectedDate)) },
+                        label = { Text(text = dateInMillisToFormat(selectedDate)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Filled.EditCalendar,

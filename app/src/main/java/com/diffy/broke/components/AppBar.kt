@@ -1,6 +1,5 @@
 package com.diffy.broke.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,10 +39,12 @@ import com.diffy.broke.Events
 import com.diffy.broke.OrderBy
 import com.diffy.broke.SortView
 import com.diffy.broke.helpers.DateRangePickerScreen
+import com.diffy.broke.helpers.getStartOfMonthInMillis
+import com.diffy.broke.helpers.getStartOfWeekInMillis
+import com.diffy.broke.helpers.getTodayStartInMillis
 
 data class DateRangeItems(
     val dateRange: String,
-    var dateRangePickerScreen: Boolean,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,40 +113,56 @@ fun CustomAppBar(
             var viewSelectionMenu by remember { mutableStateOf(false) }
             var selectedSortView by remember { mutableStateOf("All") }
             var orderBy by remember { mutableStateOf(true) }
-            var selectedRangeView by remember { mutableStateOf("All Day") }
+            var selectedRangeView by remember { mutableStateOf("AllDay") }
             var selectedRangeViewMenuOpen by remember { mutableStateOf(false) }
             val pressOffset by remember { mutableStateOf(DpOffset.Zero) }
             val dateRangePickerState = rememberDateRangePickerState()
             var dateRangePickerScreen by remember { mutableStateOf(false) }
 
             if (dateRangePickerScreen) {
-                DateRangePickerScreen(dateRangePickerState,onDismiss = {dateRangePickerScreen = !dateRangePickerScreen})
+                DateRangePickerScreen(
+                    dateRangePickerState,
+                    {dateRangePickerScreen = !dateRangePickerScreen},
+                    {
+                        onEvent(Events.SetStartDateInMillis(dateRangePickerState.selectedStartDateMillis!!))
+                        onEvent(Events.SetEndDateInMillis(dateRangePickerState.selectedEndDateMillis!!))
+                    }
+                )
             }
-
-            Log.i("StartDate",dateRangePickerState.selectedStartDateMillis.toString())
-            Log.i("EndDate",dateRangePickerState.selectedEndDateMillis.toString())
 
             val itemWidth = 20.dp
 
             val dateRangeItems = listOf(
-                DateRangeItems("AllDay",dateRangePickerScreen),
-                DateRangeItems("Today", dateRangePickerScreen),
-                DateRangeItems("ThisWeek", dateRangePickerScreen),
-                DateRangeItems("ThisMonth", dateRangePickerScreen),
-                DateRangeItems("Custom", dateRangePickerScreen),
+                DateRangeItems("AllDay"),
+                DateRangeItems("Today"),
+                DateRangeItems("ThisWeek"),
+                DateRangeItems("ThisMonth"),
+                DateRangeItems("Custom"),
             )
+
+            when(selectedRangeView) {
+                "AllDay" -> onEvent(Events.DateRangeBy(DateRange.ALLDAY))
+                "Today" -> {
+                    onEvent(Events.DateRangeBy(DateRange.RANGED))
+                    onEvent(Events.SetStartDateInMillis(getTodayStartInMillis()))
+                    onEvent(Events.SetEndDateInMillis(System.currentTimeMillis()))
+                }
+                "ThisWeek" -> {
+                    onEvent(Events.DateRangeBy(DateRange.RANGED))
+                    onEvent(Events.SetStartDateInMillis(getStartOfWeekInMillis()))
+                    onEvent(Events.SetEndDateInMillis(System.currentTimeMillis()))
+                }
+                "ThisMonth" -> {
+                    onEvent(Events.DateRangeBy(DateRange.RANGED))
+                    onEvent(Events.SetStartDateInMillis(getStartOfMonthInMillis()))
+                    onEvent(Events.SetEndDateInMillis(System.currentTimeMillis()))
+                }
+                "Custom" -> onEvent(Events.DateRangeBy(DateRange.RANGED))
+            }
             when (selectedSortView) {
                 "All" -> onEvent(Events.SortViewBy(SortView.ALL))
                 "Income" -> onEvent(Events.SortViewBy(SortView.INCOME))
                 "Expense" -> onEvent(Events.SortViewBy(SortView.EXPENSE))
-            }
-
-            when (selectedRangeView) {
-                "All Day" -> onEvent(Events.DateRangeBy(DateRange.ALLDAY))
-                "Today" -> onEvent(Events.DateRangeBy(DateRange.ALLDAY))
-                "ThisWeek" -> onEvent(Events.DateRangeBy(DateRange.ALLDAY))
-                "ThisMonth" -> onEvent(Events.DateRangeBy(DateRange.ALLDAY))
-                "Custom" -> onEvent(Events.DateRangeBy(DateRange.ALLDAY))
             }
 
             if (orderBy) {
@@ -191,7 +208,7 @@ fun CustomAppBar(
                 label = { Text(text = if (orderBy) "ASC" else "DESC") },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Filled.Sort,
+                        imageVector = Icons.AutoMirrored.Filled.Sort,
                         contentDescription = "Sort by ascending or descending",
                         modifier = Modifier.size(FilterChipDefaults.IconSize)
                     )
@@ -238,15 +255,15 @@ fun CustomAppBar(
                 modifier = Modifier
                     .wrapContentSize()
             ) {
+                dateRangeItems.forEach {
                     DropdownMenuItem(
                         onClick = {
-                            selectedRangeView = "it.dateRange"
                             selectedRangeViewMenuOpen = false
-                            dateRangePickerScreen = true
+                            selectedRangeView = it.dateRange
+                            if (it.dateRange == "Custom") dateRangePickerScreen = !dateRangePickerScreen
                         },
-                        text = { Text(text = "it.dateRange") }
+                        text = { Text(text = it.dateRange) }
                     )
-                dateRangeItems.forEach {
                 }
             }
         }

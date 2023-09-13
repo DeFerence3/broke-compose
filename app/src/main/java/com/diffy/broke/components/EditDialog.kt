@@ -33,8 +33,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.Events
 import com.diffy.broke.States
-import com.diffy.broke.helpers.DatePickerScreen
-import com.diffy.broke.helpers.DateInMillisToFormat
+import com.diffy.broke.helpers.dateInMillisToFormat
+import com.diffy.broke.helpers.datePickerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +51,7 @@ fun EditPackDialog(
     var selectedDate by remember { mutableStateOf(System.currentTimeMillis()) }
 
     if (showDatePickerDialog){
-        selectedDate = DatePickerScreen(
+        selectedDate = datePickerScreen(
             datePickerState = datePickerState,
             onShowDialogChange = { showDatePickerDialog = it }
         )
@@ -81,7 +81,7 @@ fun EditPackDialog(
                         onClick = {
                             showDatePickerDialog = !showDatePickerDialog
                         },
-                        label = { Text(text = DateInMillisToFormat(datePickerState.selectedDateMillis)) },
+                        label = { Text(text = dateInMillisToFormat(datePickerState.selectedDateMillis)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Filled.EditCalendar,

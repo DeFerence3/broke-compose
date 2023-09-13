@@ -1,6 +1,7 @@
 package com.diffy.broke.helpers
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,16 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,7 +31,7 @@ import java.util.Locale
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerScreen(
+fun datePickerScreen(
     datePickerState: DatePickerState,
     onShowDialogChange: (Boolean) -> Unit
 ): Long {
@@ -60,8 +57,37 @@ fun DatePickerScreen(
     return selectedDate
 }
 
+fun getTodayStartInMillis(): Long {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.timeInMillis
+}
+
+fun getStartOfWeekInMillis(): Long {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.timeInMillis
+}
+
+fun getStartOfMonthInMillis(): Long {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.DAY_OF_MONTH, 1)
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.timeInMillis
+}
+
 @Composable
-fun DateInMillisToFormat(dateMillis: Long?): String {
+fun dateInMillisToFormat(dateMillis: Long?): String {
     val currentDate = Calendar.getInstance()
     val selectedDate = Calendar.getInstance().apply {
         if (dateMillis != null) {
@@ -86,6 +112,7 @@ fun DateInMillisToFormat(dateMillis: Long?): String {
 fun DateRangePickerScreen(
     dateRangePickerState: DateRangePickerState,
     onDismiss: () -> Unit,
+    setDateRangeOnApply: () -> Unit,
 ) {
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -97,9 +124,27 @@ fun DateRangePickerScreen(
                 .background(MaterialTheme.colorScheme.background),
             verticalArrangement = Arrangement.Top
         ) {
-            // Add a row with "Save" and dismiss actions.
-
             DateRangePicker(state = dateRangePickerState, modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = { onDismiss() }) {
+                    Text(text = "Cancel")
+                }
+                TextButton(onClick = {
+                    setDateRangeOnApply()
+                    println("Custom")
+                    Log.i("start", dateRangePickerState.selectedStartDateMillis!!.toString())
+                    Log.i("end", dateRangePickerState.selectedEndDateMillis!!.toString())
+                    onDismiss()
+                }) {
+                    Text(text = "Set")
+                }
+            }
         }
     }
 }
