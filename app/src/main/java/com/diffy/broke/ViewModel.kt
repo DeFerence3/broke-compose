@@ -118,7 +118,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 val transactionDateInMillis = state.value.transactionDateInMillis
                 val id = state.value.id
 
-                if ( packName.isBlank() ){
+                if ( packName.isBlank() || totalExp.isBlank() ){
                     return
                 }
 
