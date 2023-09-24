@@ -32,6 +32,4 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-
-    implementation("io.github.seyoungcho2:dynamic-theme-compose-material3:0.0.3")
 }
