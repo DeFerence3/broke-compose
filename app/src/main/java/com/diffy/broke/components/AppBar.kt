@@ -112,7 +112,7 @@ fun CustomAppBar(
         ) {
             var viewSelectionMenu by remember { mutableStateOf(false) }
             var selectedSortView by remember { mutableStateOf("All") }
-            var orderBy by remember { mutableStateOf(true) }
+            var orderBy by remember { mutableStateOf(false) }
             var selectedRangeView by remember { mutableStateOf("AllDay") }
             var selectedRangeViewMenuOpen by remember { mutableStateOf(false) }
             val pressOffset by remember { mutableStateOf(DpOffset.Zero) }

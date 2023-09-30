@@ -32,16 +32,16 @@ class ViewModel(private val dao: Dao): ViewModel() {
                             OrderBy.ASENDING -> {
                                 _dateRangeBy.flatMapLatest { dateRangeBy ->
                                     when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getTransactionsOrderByAscend()
-                                        DateRange.RANGED -> dao.getTransactionsOrderByAscendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
+                                        DateRange.ALLDAY -> getTransactions(0,dao)
+                                        DateRange.RANGED -> getTransactions(1,dao)
                                     }
                                 }
                             }
                             OrderBy.DECENDING -> {
                                 _dateRangeBy.flatMapLatest { dateRangeBy ->
                                     when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getTransactionsOrderByDescend()
-                                        DateRange.RANGED -> dao.getTransactionsOrderByDescendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
+                                        DateRange.ALLDAY -> getTransactions(2,dao)
+                                        DateRange.RANGED -> getTransactions(3,dao)
                                     }
                                 }
                             }
@@ -54,22 +54,21 @@ class ViewModel(private val dao: Dao): ViewModel() {
                             OrderBy.ASENDING -> {
                                 _dateRangeBy.flatMapLatest { dateRangeBy ->
                                     when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getExpenseOrderByAscend()
-                                        DateRange.RANGED -> dao.getExpenseOrderByAscendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
+                                        DateRange.ALLDAY -> getTransactions(4,dao)
+                                        DateRange.RANGED -> getTransactions(5,dao)
                                     }
                                 }
                             }
                             OrderBy.DECENDING -> {
                                 _dateRangeBy.flatMapLatest { dateRangeBy ->
                                     when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getExpenseOrderByDescend()
-                                        DateRange.RANGED -> dao.getExpenseOrderByDescendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
+                                        DateRange.ALLDAY -> getTransactions(6,dao)
+                                        DateRange.RANGED -> getTransactions(7,dao)
                                     }
                                 }
                             }
                         }
                     }
-
                 }
                 SortView.INCOME -> {
                     _orderBy.flatMapLatest { orderBy ->
@@ -77,16 +76,16 @@ class ViewModel(private val dao: Dao): ViewModel() {
                             OrderBy.ASENDING -> {
                                 _dateRangeBy.flatMapLatest { dateRangeBy ->
                                     when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getIncomeOrderByAscend()
-                                        DateRange.RANGED -> dao.getIncomeOrderByAscendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
+                                        DateRange.ALLDAY -> getTransactions(8,dao)
+                                        DateRange.RANGED -> getTransactions(9,dao)
                                     }
                                 }
                             }
                             OrderBy.DECENDING -> {
                                 _dateRangeBy.flatMapLatest { dateRangeBy ->
                                     when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getIncomeOrderByDescend()
-                                        DateRange.RANGED -> dao.getIncomeOrderByDescendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
+                                        DateRange.ALLDAY -> getTransactions(10,dao)
+                                        DateRange.RANGED -> getTransactions(11,dao)
                                     }
                                 }
                             }
