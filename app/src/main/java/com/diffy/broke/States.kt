@@ -14,6 +14,6 @@ data class States(
     val transactionDateInMillis: Long = 0,
     val transactionsOrderBy: OrderBy = OrderBy.ASENDING,
     val transactionsDateRange: DateRange = DateRange.ALLDAY,
-    var startDateInMillis: Long = System.currentTimeMillis(),
-    var endDateInMillis: Long = System.currentTimeMillis()
+    val startDateInMillis: Long = 1,
+    val endDateInMillis: Long = 1
 )

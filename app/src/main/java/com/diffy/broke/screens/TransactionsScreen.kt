@@ -1,6 +1,5 @@
 package com.diffy.broke.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,8 +31,8 @@ import com.diffy.broke.components.CustomAppBar
 import com.diffy.broke.components.EditPackDialog
 import com.diffy.broke.components.TransactionItem
 import com.diffy.broke.components.TransactionsHeader
-import java.text.SimpleDateFormat
-import java.util.Date
+import com.diffy.broke.utilcomponents.dateInMillisToFormat
+import com.diffy.broke.utilcomponents.formatDateFromMilliseconds
 import kotlin.collections.forEach as forEach
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -93,7 +92,7 @@ fun TransactionsScreen(
             ) {
                 state.transactions.forEach { transactionsInTimeperiod ->
                     stickyHeader {
-                        TransactionsHeader(transHeadTitle = formatDateFromMilliseconds(transactionsInTimeperiod.day))
+                        TransactionsHeader(formatDateFromMilliseconds(transactionsInTimeperiod.day))
                     }
                     items(transactionsInTimeperiod.rangedTransactions) { transaction ->
                         TransactionItem(
@@ -105,11 +104,4 @@ fun TransactionsScreen(
             }
         }
     }
-}
-
-@SuppressLint("SimpleDateFormat")
-fun formatDateFromMilliseconds(milliseconds: Long): String {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy - EEE")
-    val date = Date(milliseconds)
-    return dateFormat.format(date)
 }

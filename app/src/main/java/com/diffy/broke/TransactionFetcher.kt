@@ -1,63 +1,66 @@
 package com.diffy.broke
 
 import com.diffy.broke.database.Dao
-import com.diffy.broke.dataclasses.DayRange
+import com.diffy.broke.database.Transactions
 import com.diffy.broke.dataclasses.TransactionsInTimeperiod
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import java.util.Calendar
+import com.diffy.broke.utilcomponents.splitDateRange
+import kotlinx.coroutines.flow.firstOrNull
 
-fun getTransactions(mode: Int,dao: Dao): Flow<List<TransactionsInTimeperiod>> = flow {
-    val minMaxDates = dao.getMinAndMaxDatetime().first()
-    val transactionWithDate = mutableListOf<TransactionsInTimeperiod>()
-    val splittedDates = splitDateRange(minMaxDates.minValue, minMaxDates.maxValue)
+suspend fun getTransactions(
+    sort: SortView,
+    order: Int,
+    startDateInMillis: Long,
+    endDateInMillis: Long,
+    dao: Dao
+): List<TransactionsInTimeperiod> {
 
-    when(mode) {
-        1 -> {
-            splittedDates.forEach { dates ->
-                val transactions = dao.getTransactionsOrderByAscendOnDateRange(dates.startTimeMillis, dates.endTimeMillis)
-                transactionWithDate.add(TransactionsInTimeperiod(dates.startTimeMillis, transactions.first()))
+    val transactionsintimeperiod = (mutableListOf <TransactionsInTimeperiod>())
+    var transactionsList: List<Transactions>?
+    val splittedDated = splitDateRange(startDateInMillis,endDateInMillis)
+
+/*    if (sort == SortView.ALL) {
+        splittedDated.forEach{ dates ->
+            val transactionsList = dao.getAllTransactionsOnDateRange(dates.startTimeMillis, dates.endTimeMillis).firstOrNull()
+            if (!transactionsList.isNullOrEmpty()) {
+                transactionsintimeperiod.add(
+                    TransactionsInTimeperiod(
+                        dates.startTimeMillis,
+                        transactionsList
+                    )
+                )
             }
         }
-        2 -> {}
-        3 -> {}
-        4 -> {}
-        5 -> {}
-        6 -> {}
-        7 -> {}
-        8 -> {}
-        9 -> {}
-        10 -> {}
-        11 -> {}
+    } else {
+        splittedDated.forEach{ dates ->
+            val transactionsList = dao.getExpenseOrIncomeOnDateRange(dates.startTimeMillis, dates.endTimeMillis,sort.ordinal).firstOrNull()
+            if (!transactionsList.isNullOrEmpty()) {
+                transactionsintimeperiod.add(
+                    TransactionsInTimeperiod(
+                        dates.startTimeMillis,
+                        transactionsList
+                    )
+                )
+            }
+        }
+    }*/
+
+    splittedDated.map { dates ->
+        transactionsList = if (sort == SortView.ALL) {
+            dao.getAllTransactionsOnDateRange(dates.startTimeMillis, dates.endTimeMillis).firstOrNull()
+        } else {
+            dao.getExpenseOrIncomeOnDateRange(dates.startTimeMillis, dates.endTimeMillis,sort.ordinal).firstOrNull()
+        }
+
+        if (!transactionsList.isNullOrEmpty()) {
+            transactionsintimeperiod.add(
+                TransactionsInTimeperiod(
+                    dates.startTimeMillis,
+                    transactionsList!!
+                )
+            )
+        }
     }
 
-    emit(transactionWithDate)
-}
-
-
-fun splitDateRange(startDateMillis: Long, endDateMillis: Long): List<DayRange> {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = startDateMillis
-
-    val dayRanges = mutableListOf<DayRange>()
-
-    while (calendar.timeInMillis <= endDateMillis) {
-        val startOfDay = calendar.clone() as Calendar
-        startOfDay.set(Calendar.HOUR_OF_DAY, 0)
-        startOfDay.set(Calendar.MINUTE, 0)
-        startOfDay.set(Calendar.SECOND, 0)
-        startOfDay.set(Calendar.MILLISECOND, 0)
-
-        val endOfDay = calendar.clone() as Calendar
-        endOfDay.set(Calendar.HOUR_OF_DAY, 23)
-        endOfDay.set(Calendar.MINUTE, 59)
-        endOfDay.set(Calendar.SECOND, 59)
-        endOfDay.set(Calendar.MILLISECOND, 999)
-
-        dayRanges.add(DayRange(startOfDay.timeInMillis, endOfDay.timeInMillis))
-
-        calendar.add(Calendar.DAY_OF_YEAR, 1)
-    }
-    return dayRanges
+    return if (order == 1 )transactionsintimeperiod.sortedBy { it.day }
+    else { transactionsintimeperiod.sortedByDescending { it.day } }
 }

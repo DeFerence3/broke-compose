@@ -38,10 +38,10 @@ import com.diffy.broke.DateRange
 import com.diffy.broke.Events
 import com.diffy.broke.OrderBy
 import com.diffy.broke.SortView
-import com.diffy.broke.helpers.DateRangePickerScreen
-import com.diffy.broke.helpers.getStartOfMonthInMillis
-import com.diffy.broke.helpers.getStartOfWeekInMillis
-import com.diffy.broke.helpers.getTodayStartInMillis
+import com.diffy.broke.utilcomponents.DateRangePickerScreen
+import com.diffy.broke.utilcomponents.getStartOfMonthInMillis
+import com.diffy.broke.utilcomponents.getStartOfWeekInMillis
+import com.diffy.broke.utilcomponents.getTodayStartInMillis
 
 data class DateRangeItems(
     val dateRange: String,
@@ -112,7 +112,7 @@ fun CustomAppBar(
         ) {
             var viewSelectionMenu by remember { mutableStateOf(false) }
             var selectedSortView by remember { mutableStateOf("All") }
-            var orderBy by remember { mutableStateOf(false) }
+            var orderBy by remember { mutableStateOf(true) }
             var selectedRangeView by remember { mutableStateOf("AllDay") }
             var selectedRangeViewMenuOpen by remember { mutableStateOf(false) }
             val pressOffset by remember { mutableStateOf(DpOffset.Zero) }
