@@ -22,12 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import com.diffy.broke.R
 
-
 @Composable
 fun AboutDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     AlertDialog(
         modifier = modifier,
         onDismissRequest = {
@@ -66,7 +66,7 @@ fun AboutDialog(
                     Spacer(modifier = Modifier.width(10.dp))
                     Text("Broke")
                     Text("Stable")
-                    Text("v1.4.1")
+                    Text("v1.5.1")
                     Spacer(modifier = Modifier.width(10.dp))
                 }
                 Spacer(modifier = Modifier.width(10.dp))
