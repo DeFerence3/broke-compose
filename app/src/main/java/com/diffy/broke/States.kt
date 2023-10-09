@@ -1,9 +1,9 @@
 package com.diffy.broke
 
-import com.diffy.broke.database.Transactions
+import com.diffy.broke.dataclasses.TransactionsInTimeperiod
 
 data class States(
-    val transactions: List<Transactions> = emptyList(),
+    val transactions: List<TransactionsInTimeperiod> = emptyList(),
     val transactionName: String = "",
     val transactionAmount: String = "",
     val isExp: Boolean = true,
@@ -14,6 +14,6 @@ data class States(
     val transactionDateInMillis: Long = 0,
     val transactionsOrderBy: OrderBy = OrderBy.ASENDING,
     val transactionsDateRange: DateRange = DateRange.ALLDAY,
-    var startDateInMillis: Long = System.currentTimeMillis(),
-    var endDateInMillis: Long = System.currentTimeMillis()
+    val startDateInMillis: Long = 1,
+    val endDateInMillis: Long = 1
 )

@@ -4,14 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.diffy.broke.database.Dao
 import com.diffy.broke.database.Transactions
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ViewModel(private val dao: Dao): ViewModel() {
 
@@ -22,85 +23,32 @@ class ViewModel(private val dao: Dao): ViewModel() {
     private var _startDateInMillis = MutableStateFlow(System.currentTimeMillis())
     private var _endDateInMillis = MutableStateFlow(System.currentTimeMillis())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val _pack = _sortBy
-        .flatMapLatest { sortType ->
-            when(sortType) {
-                SortView.ALL -> {
-                    _orderBy.flatMapLatest { orderBy ->
-                        when(orderBy) {
-                            OrderBy.ASENDING -> {
-                                _dateRangeBy.flatMapLatest { dateRangeBy ->
-                                    when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getTransactionsOrderByAscend()
-                                        DateRange.RANGED -> dao.getTransactionsOrderByAscendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
-                                    }
-                                }
-                            }
-                            OrderBy.DECENDING -> {
-                                _dateRangeBy.flatMapLatest { dateRangeBy ->
-                                    when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getTransactionsOrderByDescend()
-                                        DateRange.RANGED -> dao.getTransactionsOrderByDescendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
-                                    }
-                                }
-                            }
-                        }
+    init {
+        viewModelScope.launch {
+            _dateRangeBy.collect { dateRangeBy ->
+                if (dateRangeBy == DateRange.ALLDAY) {
+                    val minMaxDates = withContext(Dispatchers.IO) {
+                        dao.getMinMaxDate().first()
                     }
-                }
-                SortView.EXPENSE -> {
-                    _orderBy.flatMapLatest { orderBy ->
-                        when(orderBy) {
-                            OrderBy.ASENDING -> {
-                                _dateRangeBy.flatMapLatest { dateRangeBy ->
-                                    when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getExpenseOrderByAscend()
-                                        DateRange.RANGED -> dao.getExpenseOrderByAscendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
-                                    }
-                                }
-                            }
-                            OrderBy.DECENDING -> {
-                                _dateRangeBy.flatMapLatest { dateRangeBy ->
-                                    when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getExpenseOrderByDescend()
-                                        DateRange.RANGED -> dao.getExpenseOrderByDescendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-                SortView.INCOME -> {
-                    _orderBy.flatMapLatest { orderBy ->
-                        when(orderBy) {
-                            OrderBy.ASENDING -> {
-                                _dateRangeBy.flatMapLatest { dateRangeBy ->
-                                    when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getIncomeOrderByAscend()
-                                        DateRange.RANGED -> dao.getIncomeOrderByAscendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
-                                    }
-                                }
-                            }
-                            OrderBy.DECENDING -> {
-                                _dateRangeBy.flatMapLatest { dateRangeBy ->
-                                    when(dateRangeBy) {
-                                        DateRange.ALLDAY -> dao.getIncomeOrderByDescend()
-                                        DateRange.RANGED -> dao.getIncomeOrderByDescendOnDateRange(_startDateInMillis.value,_endDateInMillis.value)
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    _startDateInMillis.value = minMaxDates.minValue
+                    _endDateInMillis.value = minMaxDates.maxValue
                 }
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    }
 
-    val state = combine(_state, _orderBy, _pack, _dateRangeBy) { state, orderBy, pack, _ ->
+     private val _pack = combine(
+         _sortBy,
+         _orderBy,
+         _startDateInMillis,
+         _endDateInMillis
+     ) { sortView, orderBy, startDateInMillis, endDateInMillis ->
+        getTransactions(sortView, orderBy.ordinal, startDateInMillis, endDateInMillis, dao)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    val state = combine(_state, _orderBy, _pack, _dateRangeBy) { state, _ , pack, _ ->
         state.copy(
             transactions = pack,
-            transactionsOrderBy = orderBy
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), States())
 

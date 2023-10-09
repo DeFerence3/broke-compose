@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.Events
 import com.diffy.broke.database.Transactions
-import com.diffy.broke.screens.formatDateFromMilliseconds
+import com.diffy.broke.utilcomponents.dateInMillisToFormat
 
 @Composable
 fun TransactionItem(
@@ -101,7 +101,7 @@ fun TransactionItem(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
-                    text = formatDateFromMilliseconds(transaction.day),
+                    text = dateInMillisToFormat(transaction.day),
                     modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
                     style = MaterialTheme.typography.bodyMedium,
                 )

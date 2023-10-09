@@ -1,7 +1,7 @@
 package com.diffy.broke
 
 enum class SortView {
-    ALL,
+    INCOME,
     EXPENSE,
-    INCOME
+    ALL
 }

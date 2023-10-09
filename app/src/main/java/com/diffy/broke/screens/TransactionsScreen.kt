@@ -1,6 +1,6 @@
 package com.diffy.broke.screens
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -30,10 +30,12 @@ import com.diffy.broke.components.AddPackDialog
 import com.diffy.broke.components.CustomAppBar
 import com.diffy.broke.components.EditPackDialog
 import com.diffy.broke.components.TransactionItem
-import java.text.SimpleDateFormat
-import java.util.Date
+import com.diffy.broke.components.TransactionsHeader
+import com.diffy.broke.utilcomponents.dateInMillisToFormat
+import com.diffy.broke.utilcomponents.formatDateFromMilliseconds
+import kotlin.collections.forEach as forEach
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TransactionsScreen(
     state: States,
@@ -87,22 +89,19 @@ fun TransactionsScreen(
                     .padding(16.dp),
                 contentPadding = padding,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-
             ) {
-                items(state.transactions) { transaction ->
-                    TransactionItem(
-                        transaction = transaction,
-                        onEvent = onEvent
-                    )
+                state.transactions.forEach { transactionsInTimeperiod ->
+                    stickyHeader {
+                        TransactionsHeader(formatDateFromMilliseconds(transactionsInTimeperiod.day))
+                    }
+                    items(transactionsInTimeperiod.rangedTransactions) { transaction ->
+                        TransactionItem(
+                            transaction = transaction,
+                            onEvent = onEvent
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-@SuppressLint("SimpleDateFormat")
-fun formatDateFromMilliseconds(milliseconds: Long): String {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy - EEE")
-    val date = Date(milliseconds)
-    return dateFormat.format(date)
 }

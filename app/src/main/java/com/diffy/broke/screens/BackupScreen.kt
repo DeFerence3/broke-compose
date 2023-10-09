@@ -138,8 +138,7 @@ fun backupNow(context: Context, db: Databases, backup: RoomBackup) {
         .backupIsEncrypted(false)
         .maxFileCount(10)
         .apply {
-            onCompleteListener { success, message, exitCode ->
-                println( "success: $success, message: $message, exitCode: $exitCode")
+            onCompleteListener { _, _, _ ->
                 restartApp(Intent(context,MainActivity::class.java))
             }
         }.backup()
@@ -155,8 +154,7 @@ fun restoreNow(context: Context, db: Databases, backup: RoomBackup) {
         .backupIsEncrypted(false)
         .maxFileCount(10)
         .apply {
-            onCompleteListener { success, message, exitCode ->
-                println( "success: $success, message: $message, exitCode: $exitCode")
+            onCompleteListener { _, _, _ ->
                 restartApp(Intent(context,MainActivity::class.java))
             }
         }.restore()
