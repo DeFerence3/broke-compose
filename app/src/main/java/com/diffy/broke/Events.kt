@@ -1,5 +1,6 @@
 package com.diffy.broke
 
+import com.diffy.broke.database.Tags
 import com.diffy.broke.database.Transactions
 
 sealed interface Events {
@@ -21,4 +22,6 @@ sealed interface Events {
     data class SetStartDateInMillis(val startDateInMillis: Long): Events
     data class SetEndDateInMillis(val endDateInMillis: Long): Events
     data class SetId(val id: Int) : Events
+    data class SetTags(val tags: List<Tags>): Events
+
 }

@@ -1,9 +1,11 @@
 package com.diffy.broke
 
+import com.diffy.broke.database.Tags
 import com.diffy.broke.dataclasses.TransactionsInTimeperiod
 
 data class States(
     val transactions: List<TransactionsInTimeperiod> = emptyList(),
+    val tags: List<Tags> = emptyList(),
     val transactionName: String = "",
     val transactionAmount: String = "",
     val isExp: Boolean = true,

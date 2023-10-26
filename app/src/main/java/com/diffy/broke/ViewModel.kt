@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.diffy.broke.database.Dao
 import com.diffy.broke.database.Transactions
+import com.diffy.broke.database.relations.TransactionWithTagsCrossRef
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,6 +66,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 val isExp = state.value.isExp
                 val transactionDateInMillis = state.value.transactionDateInMillis
                 val id = state.value.id
+                val tags = state.value.tags
 
                 if ( packName.isBlank() || totalExp.isBlank() ){
                     return
@@ -77,9 +79,17 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     day = transactionDateInMillis,
                     id = id
                 )
-                viewModelScope.launch {
-                    dao.upsertTransaction(transaction)
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    val tagsid = dao.upsertTags(tags)
+                    val transid = dao.upsertTransaction(transaction)
+                    val transTagIdList = tagsid.map { tagId ->
+                        TransactionWithTagsCrossRef(transid.toInt(), tagId.toInt())
+                    }
+                    dao.upsertTransactionsWithTags(transTagIdList)
                 }
+
+
                 _state.update { it.copy(
                     isCreatingTransaction = false,
                     isEditingTransaction = false,
@@ -115,7 +125,6 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     isCreatingTransaction = true
                 ) }
             }
-
             is Events.SetTransactionDate -> {
                 _state.update { it.copy(
                     transactionDateInMillis = event.time
@@ -124,34 +133,34 @@ class ViewModel(private val dao: Dao): ViewModel() {
             is Events.SortViewBy -> {
                 _sortBy.value = event.sortView
             }
-
-            Events.HideEditDialog -> {
+            is Events.HideEditDialog -> {
                 _state.update { it.copy(
                     isEditingTransaction = false
                 ) }
             }
-            Events.ShowEditDialog -> {
+            is Events.ShowEditDialog -> {
                 _state.update { it.copy(
                     isEditingTransaction = true
                 ) }
             }
-
             is Events.SetId -> {
                 _state.update { it.copy(
                     id = event.id
                 ) }
             }
-
             is Events.DateRangeBy -> {
                 _dateRangeBy.value = event.dateRange
             }
-
             is Events.SetEndDateInMillis -> {
                 _endDateInMillis.value = event.endDateInMillis
             }
-
             is Events.SetStartDateInMillis -> {
                 _startDateInMillis.value = event.startDateInMillis
+            }
+            is Events.SetTags -> {
+                _state.update { it.copy(
+                    tags = event.tags
+                ) }
             }
         }
     }

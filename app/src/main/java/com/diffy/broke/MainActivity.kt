@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             Databases::class.java,
             "broke.db"
-        ).build()
+        ).addMigrations(Databases.migrate1to2).build()
     }
 
     private val viewmodel by viewModels<com.diffy.broke.ViewModel> (

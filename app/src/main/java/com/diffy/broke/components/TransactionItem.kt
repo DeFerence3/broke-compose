@@ -35,12 +35,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.Events
-import com.diffy.broke.database.Transactions
-import com.diffy.broke.utilcomponents.dateInMillisToFormat
+import com.diffy.broke.database.relations.TransactionWithTags
 
 @Composable
 fun TransactionItem(
-    transaction: Transactions,
+    transactionwithtags: TransactionWithTags,
     onEvent: (Events) -> Unit,
 ) {
 
@@ -51,6 +50,9 @@ fun TransactionItem(
     val interactionSource = remember {
         MutableInteractionSource()
     }
+
+    val transaction = transactionwithtags.transaction
+    val tags = transactionwithtags.tags
 
     Card(
         modifier = Modifier
@@ -100,11 +102,16 @@ fun TransactionItem(
                     modifier = Modifier.padding(8.dp, 8.dp, 8.dp, 4.dp),
                     style = MaterialTheme.typography.titleLarge,
                 )
-                Text(
-                    text = dateInMillisToFormat(transaction.day),
-                    modifier = Modifier.padding(8.dp, 4.dp, 8.dp, 8.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Row {
+                    tags.forEach { tags ->
+                        Text(
+                            text = "#${tags.tag}",
+                            modifier = Modifier.padding(8.dp, 4.dp, 3.dp, 8.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                }
+
             }
             Text(
                 text = "₹" + transaction.transAmnt.toString(),
@@ -126,6 +133,8 @@ fun TransactionItem(
                     onEvent(Events.SetAmount(transaction.transAmnt.toString()))
                     onEvent(Events.SetExpInc(transaction.isExp))
                     onEvent(Events.ShowEditDialog)
+                    onEvent(Events.SetTags(tags))
+                    println(tags)
                     isMenuVisible = !isMenuVisible
                 },
                 text = { Text(text = "Edit" ) }

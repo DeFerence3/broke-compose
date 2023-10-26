@@ -26,12 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.diffy.broke.Events
 import com.diffy.broke.States
-import com.diffy.broke.components.AddPackDialog
+import com.diffy.broke.components.AddEditPackDialog
 import com.diffy.broke.components.CustomAppBar
-import com.diffy.broke.components.EditPackDialog
 import com.diffy.broke.components.TransactionItem
 import com.diffy.broke.components.TransactionsHeader
-import com.diffy.broke.utilcomponents.dateInMillisToFormat
 import com.diffy.broke.utilcomponents.formatDateFromMilliseconds
 import kotlin.collections.forEach as forEach
 
@@ -67,10 +65,10 @@ fun TransactionsScreen(
     ) { padding ->
 
         if (state.isCreatingTransaction) {
-            AddPackDialog(state = state, onEvent = onEvent)
+            AddEditPackDialog(state = state, onEvent = onEvent)
         }
         if (state.isEditingTransaction) {
-            EditPackDialog(state = state, onEvent = onEvent)
+            AddEditPackDialog(state = state, onEvent = onEvent)
         }
 
         if(state.transactions.isEmpty()) {
@@ -96,7 +94,7 @@ fun TransactionsScreen(
                     }
                     items(transactionsInTimeperiod.rangedTransactions) { transaction ->
                         TransactionItem(
-                            transaction = transaction,
+                            transactionwithtags = transaction,
                             onEvent = onEvent
                         )
                     }
