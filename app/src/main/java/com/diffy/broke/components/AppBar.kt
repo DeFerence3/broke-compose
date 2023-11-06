@@ -59,7 +59,6 @@ fun CustomAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onEvent: ((Events) -> Unit)?,
     navController: NavHostController?,
-    state: States?
 ) {
     val itemWidth = 20.dp
     val calendar = Calendar.getInstance()
@@ -87,8 +86,6 @@ fun CustomAppBar(
         DateRangeItems("Custom"),
     )
     if (viewAbout) AboutDialog(onDismiss = { viewAbout = !viewAbout })
-
-    LeakCanary.showLeakDisplayActivityLauncherIcon(true)
 
     Column(
         modifier = Modifier

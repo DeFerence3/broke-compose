@@ -48,7 +48,7 @@ fun TransactionsScreen(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CustomAppBar("Broke",scrollBehavior, onEvent, navController,state) },
+        topBar = { CustomAppBar("Broke",scrollBehavior, onEvent, navController) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {

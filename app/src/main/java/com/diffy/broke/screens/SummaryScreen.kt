@@ -105,7 +105,7 @@ fun SummaryScreen(viewmodel: ViewModel) {
     }
 
     Scaffold(
-        topBar= { CustomAppBar("Summary", scrollBehavior, null, null, null) },
+        topBar= { CustomAppBar("Summary", scrollBehavior, null, null) },
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
