@@ -3,17 +3,19 @@ package com.diffy.broke
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.diffy.broke.database.Dao
+import com.diffy.broke.database.Tags
 import com.diffy.broke.database.Transactions
 import com.diffy.broke.database.relations.TransactionWithTagsCrossRef
+import com.diffy.broke.dataclasses.SummaryData
+import com.diffy.broke.dataclasses.TransactionByTag
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ViewModel(private val dao: Dao): ViewModel() {
 
@@ -23,20 +25,6 @@ class ViewModel(private val dao: Dao): ViewModel() {
     private val _dateRangeBy = MutableStateFlow(DateRange.ALLDAY)
     private var _startDateInMillis = MutableStateFlow(System.currentTimeMillis())
     private var _endDateInMillis = MutableStateFlow(System.currentTimeMillis())
-
-    init {
-        viewModelScope.launch {
-            _dateRangeBy.collect { dateRangeBy ->
-                if (dateRangeBy == DateRange.ALLDAY) {
-                    val minMaxDates = withContext(Dispatchers.IO) {
-                        dao.getMinMaxDate().first()
-                    }
-                    _startDateInMillis.value = minMaxDates.minValue
-                    _endDateInMillis.value = minMaxDates.maxValue
-                }
-            }
-        }
-    }
 
      private val _pack = combine(
          _sortBy,
@@ -68,7 +56,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 val id = state.value.id
                 val tags = state.value.tags
 
-                if ( packName.isBlank() || totalExp.isBlank() ){
+                if ( packName.isBlank() || totalExp.isBlank() || tags.isEmpty() ){
                     return
                 }
 
@@ -89,12 +77,11 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     dao.upsertTransactionsWithTags(transTagIdList)
                 }
 
+                clearState()
 
                 _state.update { it.copy(
                     isCreatingTransaction = false,
                     isEditingTransaction = false,
-                    transactionName = "",
-                    transactionAmount = ""
                 ) }
             }
             is Events.HideAddDialog -> {
@@ -163,5 +150,31 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 ) }
             }
         }
+    }
+
+    fun clearState() {
+        _state.update { it.copy(
+            transactionName = "",
+            transactionAmount = "",
+            transactionDateInMillis = System.currentTimeMillis(),
+            tags = emptyList(),
+            id = 0
+        ) }
+    }
+
+    fun getTotalSpendThisMonth(startOfMonthInMillis: Long, currentTimeMillis: Long): Flow<SummaryData> {
+        return dao.getOverView(startOfMonthInMillis,currentTimeMillis)
+    }
+
+    fun getTagsByTag(text: String): Flow<List<Tags>> {
+        return dao.getTagsByTags("$text%")
+    }
+
+    fun getExpenseByTag(startOfMonthInMillis: Long, currentTimeMillis: Long): Flow<List<TransactionByTag>> {
+        return dao.getExpenseByTag(startOfMonthInMillis,currentTimeMillis)
+    }
+
+    fun getIncomeByTag(startOfMonthInMillis: Long, currentTimeMillis: Long): Flow<List<TransactionByTag>> {
+        return dao.getIncomeByTag(startOfMonthInMillis,currentTimeMillis)
     }
 }

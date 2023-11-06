@@ -34,7 +34,6 @@ fun CustomTextField(
         modifier = modifier
             .height(30.dp)
             .width(IntrinsicSize.Min)
-            //.border(1.dp, MaterialTheme.colorScheme.outline)
             .padding(3.dp),
         value = value,
         onValueChange = onValueChange,

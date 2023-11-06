@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.diffy.broke.Events
 import com.diffy.broke.States
+import com.diffy.broke.ViewModel
 import com.diffy.broke.components.AddEditPackDialog
 import com.diffy.broke.components.CustomAppBar
 import com.diffy.broke.components.TransactionItem
@@ -38,7 +39,8 @@ import kotlin.collections.forEach as forEach
 fun TransactionsScreen(
     state: States,
     onEvent: (Events) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    viewmodel: ViewModel
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -46,7 +48,7 @@ fun TransactionsScreen(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CustomAppBar(scrollBehavior, onEvent, navController) },
+        topBar = { CustomAppBar("Broke",scrollBehavior, onEvent, navController,state) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
@@ -64,11 +66,8 @@ fun TransactionsScreen(
         },
     ) { padding ->
 
-        if (state.isCreatingTransaction) {
-            AddEditPackDialog(state = state, onEvent = onEvent)
-        }
-        if (state.isEditingTransaction) {
-            AddEditPackDialog(state = state, onEvent = onEvent)
+        if (state.isCreatingTransaction || state.isEditingTransaction) {
+            AddEditPackDialog(state = state, onEvent = onEvent,viewModel = viewmodel)
         }
 
         if(state.transactions.isEmpty()) {

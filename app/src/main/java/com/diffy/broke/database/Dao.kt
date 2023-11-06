@@ -9,7 +9,9 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import com.diffy.broke.database.relations.TransactionWithTags
 import com.diffy.broke.database.relations.TransactionWithTagsCrossRef
+import com.diffy.broke.dataclasses.TransactionByTag
 import com.diffy.broke.dataclasses.MinMaxDates
+import com.diffy.broke.dataclasses.SummaryData
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -45,4 +47,29 @@ interface Dao {
 
     @Query("SELECT * FROM `transactions` WHERE day BETWEEN :start AND :end")
     fun getOneTransactionWithTags(start: Long, end: Long): Flow<List<TransactionWithTags>>
+
+    @Query("select tg.tag,SUM(tr.transAmnt) totalAmount from Tags tg\n" +
+            "inner join TransactionWithTagsCrossRef ttr on ttr.tagid = tg.tagid\n" +
+            "inner join Transactions tr on tr.id = ttr.id\n" +
+            "where tr.isExp = 1 and tr.day between :start and :end\n" +
+            "group by tg.tag\n" +
+            "order by SUM(tr.transAmnt) desc")
+    fun getExpenseByTag(start: Long, end: Long): Flow<List<TransactionByTag>>
+    @Query("select tg.tag,SUM(tr.transAmnt) totalAmount from Tags tg\n" +
+            "inner join TransactionWithTagsCrossRef ttr on ttr.tagid = tg.tagid\n" +
+            "inner join Transactions tr on tr.id = ttr.id\n" +
+            "where tr.isExp = 0 and tr.day between :start and :end\n" +
+            "group by tg.tag\n" +
+            "order by SUM(tr.transAmnt) desc")
+    fun getIncomeByTag(start: Long, end: Long): Flow<List<TransactionByTag>>
+
+    @Query("SELECT \n" +
+            "    (SELECT SUM(CASE WHEN isExp = 0 THEN transAmnt ELSE 0 END) - \n" +
+            "            SUM(CASE WHEN isExp = 1 THEN transAmnt ELSE 0 END) \n" +
+            "     FROM Transactions where day between :start and :end ) as savings,\n" +
+            "    SUM(CASE WHEN isExp = 1 THEN transAmnt ELSE 0 END) as totalSpend,\n" +
+            "    SUM(CASE WHEN isExp = 0 THEN transAmnt ELSE 0 END) as totalEarn FROM Transactions where day between :start and :end")
+    fun getOverView(start: Long, end: Long): Flow<SummaryData>
+    @Query("SELECT * FROM TAGS where tag like :tag ")
+    fun getTagsByTags(tag: String): Flow<List<Tags>>
 }

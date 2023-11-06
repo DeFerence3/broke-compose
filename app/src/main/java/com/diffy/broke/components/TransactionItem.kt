@@ -132,9 +132,8 @@ fun TransactionItem(
                     onEvent(Events.SetTransactionDate(transaction.day))
                     onEvent(Events.SetAmount(transaction.transAmnt.toString()))
                     onEvent(Events.SetExpInc(transaction.isExp))
-                    onEvent(Events.ShowEditDialog)
                     onEvent(Events.SetTags(tags))
-                    println(tags)
+                    onEvent(Events.ShowEditDialog)
                     isMenuVisible = !isMenuVisible
                 },
                 text = { Text(text = "Edit" ) }

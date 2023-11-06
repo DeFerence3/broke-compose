@@ -1,6 +1,5 @@
 package com.diffy.broke.components
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -27,13 +26,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Green
@@ -42,27 +40,39 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.Events
 import com.diffy.broke.States
+import com.diffy.broke.ViewModel
 import com.diffy.broke.database.Tags
 import com.diffy.broke.utilcomponents.dateInMillisToFormat
 import com.diffy.broke.utilcomponents.datePickerScreen
+import com.diffy.broke.utilcomponents.getTimeInMillisWithGivenDay
 
-@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddEditPackDialog(
     state: States,
     onEvent: (Events) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ViewModel
 ) {
-
     var showDialog by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = selectedDate
-    )
-
-    val tags = remember { mutableStateListOf(*state.tags.toTypedArray()) }
+    var selectedDate by remember { mutableLongStateOf( if (state.isEditingTransaction) state.transactionDateInMillis else System.currentTimeMillis()) }
+    val datePickerState = rememberDatePickerState( initialSelectedDateMillis = selectedDate )
+    var tags by remember { mutableStateOf<List<Tags>>(emptyList()) }
     var text by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
+    var buttontext by remember { mutableStateOf("") }
+    var isExp by remember { mutableStateOf(true) }
+
+    if (state.isEditingTransaction) {
+        isExp = state.isExp
+        title = "Edit Transaction"
+        buttontext = "Edit"
+        onEvent(Events.SetId(state.id))
+        tags = state.tags
+    } else {
+        title = "Add Transaction"
+        buttontext = "Add"
+    }
 
     if (showDialog) {
         selectedDate = datePickerScreen(
@@ -75,19 +85,14 @@ fun AddEditPackDialog(
         modifier = modifier,
         onDismissRequest = {
             onEvent(Events.HideAddDialog)
+            onEvent(Events.HideEditDialog)
+            viewModel.clearState()
         },
-        title = { Text(text = if (state.isEditingTransaction){
-            "Edit Transaction"
-        } else {
-            "New Transaction"
-        }) },
+        title = { Text(text = title) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-
-                var isExp by remember { mutableStateOf(true) }
-                onEvent(Events.SetExpInc(isExp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -95,9 +100,7 @@ fun AddEditPackDialog(
                 ) {
                     FilterChip(
                         selected = false,
-                        onClick = {
-                                  showDialog = !showDialog
-                         },
+                        onClick = { showDialog = !showDialog },
                         label = { Text(text = dateInMillisToFormat(selectedDate)) },
                         leadingIcon = {
                             Icon(
@@ -166,8 +169,17 @@ fun AddEditPackDialog(
                     verticalArrangement = Arrangement.spacedBy(5.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    TagsChips(tags)
-
+                    tags.forEach{tag ->
+                        SuggestionChip(
+                            onClick = { tags.toMutableList().apply {
+                                remove(tag)
+                            } },
+                            label = { Text("#${tag.tag}") },
+                            modifier = Modifier.height(30.dp),
+                        )
+                    }
+                }
+                FlowRow {
                     if (tags.size <= 4) {
                         CustomTextField(
                             value = text,
@@ -175,7 +187,7 @@ fun AddEditPackDialog(
                             keyboardactions = KeyboardActions (
                                 onGo = {
                                     if(text != "") {
-                                        tags.add(Tags(0,text))
+                                        tags += Tags(0,text)
                                         onEvent(Events.SetTags(tags))
                                         text = ""
                                     }
@@ -186,31 +198,32 @@ fun AddEditPackDialog(
                             )
                         )
                     }
+                    if (text != ""){
+                        viewModel.getTagsByTag(text).collectAsState(initial = null).value?.forEach { tag->
+                            SuggestionChip(
+                                onClick = {
+                                    tags += tag
+                                    onEvent(Events.SetTags(tags))
+                                    text = ""
+                                },
+                                label = { Text("#${tag.tag}") },
+                                modifier = Modifier.height(30.dp),
+                            )
+                        }
+                    }
                 }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEvent(Events.SetTransactionDate(selectedDate))
+                    onEvent(Events.SetExpInc(isExp))
+                    onEvent(Events.SetTransactionDate(getTimeInMillisWithGivenDay(selectedDate)))
                     onEvent(Events.CreateTransaction)
                 }
             ) {
-                Text(text = if (state.isEditingTransaction){
-                    "Edit" } else { "Add" }
-                )
+                Text(text = buttontext)
             }
         },
-    ) 
-}
-
-@Composable
-fun TagsChips(tags: SnapshotStateList<Tags>) {
-    tags.forEach { tag ->
-        SuggestionChip(
-            onClick = { tags.remove(tag) },
-            label = { Text("#${tag.tag}") },
-            modifier = Modifier.height(30.dp),
-        )
-    }
+    )
 }
