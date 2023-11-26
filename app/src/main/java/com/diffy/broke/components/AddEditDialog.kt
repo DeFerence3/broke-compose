@@ -38,10 +38,11 @@ import androidx.compose.ui.graphics.Color.Companion.Green
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.diffy.broke.Events
-import com.diffy.broke.States
+import com.diffy.broke.state.Events
+import com.diffy.broke.state.States
 import com.diffy.broke.ViewModel
 import com.diffy.broke.database.Tags
+import com.diffy.broke.ui.CustomTextField
 import com.diffy.broke.utilcomponents.dateInMillisToFormat
 import com.diffy.broke.utilcomponents.datePickerScreen
 import com.diffy.broke.utilcomponents.getTimeInMillisWithGivenDay
@@ -93,7 +94,6 @@ fun AddEditPackDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -108,7 +108,6 @@ fun AddEditPackDialog(
                                 contentDescription = "Date",
                             )
                         },
-
                     )
                     FilterChip(
                         selected = false,
@@ -123,7 +122,9 @@ fun AddEditPackDialog(
                             )
                         },
                         border = FilterChipDefaults.filterChipBorder(
-                            borderColor = if (isExp) Color.Red else Green
+                            enabled = true,
+                            borderColor = if (isExp) Color.Red else Green,
+                            selected = false
                         )
                     )
                 }
@@ -138,7 +139,7 @@ fun AddEditPackDialog(
                     onValueChange = {
                         onEvent(Events.SetTransactionName(it))
                     },
-                    placeholder = {
+                    label = {
                         Text(text = "Transaction")
                     }
                 )
@@ -158,7 +159,7 @@ fun AddEditPackDialog(
                     onValueChange = {
                         onEvent(Events.SetAmount(it))
                     },
-                    placeholder = {
+                    label = {
                         Text(text = "Amount")
                     },
                     keyboardOptions = KeyboardOptions(
@@ -169,17 +170,20 @@ fun AddEditPackDialog(
                     verticalArrangement = Arrangement.spacedBy(5.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    tags.forEach{tag ->
+                    tags.forEach{ tag ->
                         SuggestionChip(
                             onClick = { tags.toMutableList().apply {
-                                remove(tag)
+                                tags -= tag
                             } },
                             label = { Text("#${tag.tag}") },
                             modifier = Modifier.height(30.dp),
                         )
                     }
                 }
-                FlowRow {
+                FlowRow(
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
                     if (tags.size <= 4) {
                         CustomTextField(
                             value = text,

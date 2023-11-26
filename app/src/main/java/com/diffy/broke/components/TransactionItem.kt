@@ -34,7 +34,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.diffy.broke.Events
+import com.diffy.broke.state.Events
 import com.diffy.broke.database.relations.TransactionWithTags
 
 @Composable

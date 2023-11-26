@@ -2,9 +2,11 @@ package com.diffy.broke.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,11 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.diffy.broke.Events
-import com.diffy.broke.States
+import com.diffy.broke.state.Events
+import com.diffy.broke.state.States
 import com.diffy.broke.ViewModel
 import com.diffy.broke.components.AddEditPackDialog
 import com.diffy.broke.components.CustomAppBar
+import com.diffy.broke.components.MainAppbarActions
+import com.diffy.broke.components.MainAppbarExtraContent
 import com.diffy.broke.components.TransactionItem
 import com.diffy.broke.components.TransactionsHeader
 import com.diffy.broke.utilcomponents.formatDateFromMilliseconds
@@ -36,7 +40,7 @@ import kotlin.collections.forEach as forEach
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun TransactionsScreen(
+fun MainScreen(
     state: States,
     onEvent: (Events) -> Unit,
     navController: NavHostController,
@@ -48,7 +52,15 @@ fun TransactionsScreen(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CustomAppBar("Broke",scrollBehavior, onEvent, navController) },
+        topBar = {
+            CustomAppBar(
+                "Broke",
+                scrollBehavior,
+                { MainAppbarActions( navController ) }
+            ) {
+                MainAppbarExtraContent(onEvent = onEvent, navController = navController,state)
+            }
+        },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
@@ -71,11 +83,10 @@ fun TransactionsScreen(
         }
 
         if(state.transactions.isEmpty()) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                contentAlignment = Alignment.Center
             ) {
                 Text(text = "No transactions", style = MaterialTheme.typography.bodyMedium)
             }
@@ -97,6 +108,11 @@ fun TransactionsScreen(
                             onEvent = onEvent
                         )
                     }
+                }
+                item {
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(padding.calculateTopPadding()))
                 }
             }
         }

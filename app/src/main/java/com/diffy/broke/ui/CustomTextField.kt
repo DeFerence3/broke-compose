@@ -1,4 +1,4 @@
-package com.diffy.broke.components
+package com.diffy.broke.ui
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box

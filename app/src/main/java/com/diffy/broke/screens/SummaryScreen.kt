@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,21 +26,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.diffy.broke.state.Events
+import com.diffy.broke.state.States
 import com.diffy.broke.ViewModel
 import com.diffy.broke.components.CustomAppBar
-import com.diffy.broke.components.TableCell
-import com.diffy.broke.dataclasses.TransactionByTag
+import com.diffy.broke.components.Overview
+import com.diffy.broke.ui.TableCell
 import com.diffy.broke.dataclasses.SummaryData
+import com.diffy.broke.dataclasses.TransactionByTag
 import com.diffy.broke.utilcomponents.MonthPickerCompo
 import com.diffy.broke.utilcomponents.dateRangeFormatter
 import com.diffy.broke.utilcomponents.getStartOfMonthInMillis
 import com.diffy.broke.utilcomponents.monthAndDateFormatter
-import com.diffy.broke.utilcomponents.monthpicker.rememberMonthPickerState
+import com.diffy.broke.ui.monthpicker.rememberMonthPickerState
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SummaryScreen(viewmodel: ViewModel) {
+fun SummaryScreen(viewmodel: ViewModel, state: States, onEvent: (Events) -> Unit) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var isMonth by remember { mutableStateOf(true) }
     val calendar = Calendar.getInstance()
@@ -57,7 +59,7 @@ fun SummaryScreen(viewmodel: ViewModel) {
         initialSelectedMonth = calendar.get(Calendar.MONTH),
         initialSelectedYear = calendar.get(Calendar.YEAR)
     )
-    var startEndDates by remember { mutableStateOf(
+    val startEndDates by remember { mutableStateOf(
         Pair(dateRangePickerState.selectedStartDateMillis!!,dateRangePickerState.selectedEndDateMillis!!)
     ) }
     val column1Weight = .4f
@@ -68,37 +70,34 @@ fun SummaryScreen(viewmodel: ViewModel) {
             dateRangePickerState = dateRangePickerState,
             dateRangePicked = {
                 isMonth = false
-                startEndDates = Pair(
-                    dateRangePickerState.selectedStartDateMillis!!,
-                    dateRangePickerState.selectedEndDateMillis!!
-                )
+                onEvent(Events.SetStartDateInMillis(dateRangePickerState.selectedStartDateMillis!!))
+                onEvent(Events.SetEndDateInMillis(dateRangePickerState.selectedEndDateMillis!!))
             },
             monthPicked = {
                 isMonth = true
-                startEndDates = Pair(
-                    monthPickerState.selectedMonthStartInMillis,
-                    monthPickerState.selectedMonthEndInMillis
-                )
+                onEvent(Events.SetStartDateInMillis(monthPickerState.selectedMonthStartInMillis))
+                onEvent(Events.SetEndDateInMillis(monthPickerState.selectedMonthEndInMillis))
+
             },
             cancelClicked = { isDateRangePickerShowing = !isDateRangePickerShowing }
         )
     }
 
-    LaunchedEffect(startEndDates) {
-        viewmodel.getTotalSpendThisMonth(startEndDates.first,startEndDates.second)
+    LaunchedEffect(state) {
+        viewmodel.getTotalSpendThisMonth()
             .collect { newSummary ->
                 summaryData = newSummary
             }
     }
 
-    LaunchedEffect(startEndDates) {
-        viewmodel.getExpenseByTag(startEndDates.first,startEndDates.second)
+    LaunchedEffect(state) {
+        viewmodel.getExpenseByTag()
             .collect{
                 expenseByTags = it
             }
     }
-    LaunchedEffect(startEndDates) {
-        viewmodel.getIncomeByTag(startEndDates.first,startEndDates.second)
+    LaunchedEffect(state) {
+        viewmodel.getIncomeByTag()
             .collect{
                 incomeByTags = it
             }
@@ -141,27 +140,16 @@ fun SummaryScreen(viewmodel: ViewModel) {
                         style = MaterialTheme.typography.headlineMedium
                     )
                 }
-
                 Spacer(modifier = Modifier
                     .fillMaxWidth()
                     .height(10.dp))
-                Text(
-                    modifier = Modifier.padding(8.dp),
-                    text = "Overview",
-                    style = MaterialTheme.typography.titleLarge
+                Overview(
+                    column1Weight = column1Weight,
+                    column2Weight = column2Weight,
+                    totalSpend = summaryData.totalSpend,
+                    totalEarn = summaryData.totalEarn,
+                    totalSaving = summaryData.savings
                 )
-                Row (modifier = Modifier.fillMaxWidth()){
-                    TableCell(text = "Total spending:", weight = column1Weight)
-                    TableCell(text = summaryData.totalSpend.toString(), weight = column2Weight)
-                }
-                Row (modifier = Modifier.fillMaxWidth()){
-                    TableCell(text = "Total earning:", weight = column1Weight)
-                    TableCell(text = summaryData.totalEarn.toString(), weight = column2Weight)
-                }
-                Row (modifier = Modifier.fillMaxWidth()){
-                    TableCell(text = "Total savings:", weight = column1Weight)
-                    TableCell(text = summaryData.savings.toString(), weight = column2Weight)
-                }
             }
             item{
                 Spacer(modifier = Modifier
@@ -180,11 +168,11 @@ fun SummaryScreen(viewmodel: ViewModel) {
                     }
                 }
             } else {
-                items(expenseByTags) { expenseByTag ->
+                item{(expenseByTags).forEach { expenseByTag ->
                     Row (modifier = Modifier.fillMaxWidth()){
                         TableCell(text = expenseByTag.tag, weight = column1Weight)
                         TableCell(text = expenseByTag.totalAmount.toString(), weight = column2Weight)
-                    }
+                    }}
                 }
             }
             item{
@@ -204,12 +192,12 @@ fun SummaryScreen(viewmodel: ViewModel) {
                     }
                 }
             } else {
-                items(incomeByTags) { incomeByTag ->
+                item{incomeByTags.forEach  { incomeByTag ->
                     Row (modifier = Modifier.fillMaxWidth()){
                         TableCell(text = incomeByTag.tag, weight = column1Weight)
                         TableCell(text = incomeByTag.totalAmount.toString(), weight = column2Weight)
                     }
-                }
+                }}
             }
         }
     }

@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.diffy.broke.utilcomponents.monthpicker.MonthPicker
-import com.diffy.broke.utilcomponents.monthpicker.MonthPickerState
+import com.diffy.broke.ui.monthpicker.MonthPicker
+import com.diffy.broke.ui.monthpicker.MonthPickerState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

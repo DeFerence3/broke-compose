@@ -1,4 +1,4 @@
-package com.diffy.broke.utilcomponents.monthpicker
+package com.diffy.broke.ui.monthpicker
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
