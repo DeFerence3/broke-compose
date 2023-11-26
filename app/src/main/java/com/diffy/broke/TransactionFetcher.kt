@@ -1,8 +1,11 @@
 package com.diffy.broke
 
+import android.util.Log
 import com.diffy.broke.database.Dao
 import com.diffy.broke.database.relations.TransactionWithTags
 import com.diffy.broke.dataclasses.TransactionsInTimeperiod
+import com.diffy.broke.state.SortView
+import com.diffy.broke.utilcomponents.formatDateFromMilliseconds
 import com.diffy.broke.utilcomponents.splitDateRange
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -17,7 +20,10 @@ suspend fun getTransactions(
     val transactionsintimeperiod = (mutableListOf <TransactionsInTimeperiod>())
     var transactionsList: List<TransactionWithTags>?
     val splittedDated = splitDateRange(startDateInMillis,endDateInMillis)
-
+    Log.d("getTransactions", "sort: $sort")
+    Log.d("getTransactions", "order: $order")
+    Log.d("getTransactions", "startdate: "+ formatDateFromMilliseconds(startDateInMillis))
+    Log.d("getTransactions", "enddate: "+ formatDateFromMilliseconds(endDateInMillis))
 /*    if (sort == SortView.ALL) {
         splittedDated.forEach{ dates ->
             val transactionsList = dao.getAllTransactionsOnDateRange(dates.startTimeMillis, dates.endTimeMillis).firstOrNull()

@@ -8,7 +8,11 @@ import com.diffy.broke.database.Transactions
 import com.diffy.broke.database.relations.TransactionWithTagsCrossRef
 import com.diffy.broke.dataclasses.SummaryData
 import com.diffy.broke.dataclasses.TransactionByTag
-import kotlinx.coroutines.Dispatchers
+import com.diffy.broke.state.DateRange
+import com.diffy.broke.state.Events
+import com.diffy.broke.state.OrderBy
+import com.diffy.broke.state.SortView
+import com.diffy.broke.state.States
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,18 +24,18 @@ import kotlinx.coroutines.launch
 class ViewModel(private val dao: Dao): ViewModel() {
 
     private val _state = MutableStateFlow(States())
-    private val _orderBy = MutableStateFlow(OrderBy.ASENDING)
+    private val _orderBy = MutableStateFlow(OrderBy.ASCENDING)
     private val _sortBy = MutableStateFlow(SortView.ALL)
-    private val _dateRangeBy = MutableStateFlow(DateRange.ALLDAY)
-    private var _startDateInMillis = MutableStateFlow(System.currentTimeMillis())
-    private var _endDateInMillis = MutableStateFlow(System.currentTimeMillis())
+    private val _dateRangeBy = MutableStateFlow(DateRange.MONTH)
+    private var _startDateInMillis = MutableStateFlow(0L)
+    private var _endDateInMillis = MutableStateFlow(0L)
 
-     private val _pack = combine(
-         _sortBy,
-         _orderBy,
-         _startDateInMillis,
-         _endDateInMillis
-     ) { sortView, orderBy, startDateInMillis, endDateInMillis ->
+    private val _pack = combine(
+        _sortBy,
+        _orderBy,
+        _startDateInMillis,
+        _endDateInMillis
+    ) { sortView, orderBy, startDateInMillis, endDateInMillis ->
         getTransactions(sortView, orderBy.ordinal, startDateInMillis, endDateInMillis, dao)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
@@ -39,7 +43,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
         state.copy(
             transactions = pack,
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), States())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3000), States())
 
     fun onEvent(event: Events){
         when (event) {
@@ -68,7 +72,7 @@ class ViewModel(private val dao: Dao): ViewModel() {
                     id = id
                 )
 
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch {
                     val tagsid = dao.upsertTags(tags)
                     val transid = dao.upsertTransaction(transaction)
                     val transTagIdList = tagsid.map { tagId ->
@@ -118,7 +122,11 @@ class ViewModel(private val dao: Dao): ViewModel() {
                 ) }
             }
             is Events.SortViewBy -> {
-                _sortBy.value = event.sortView
+                _state.update { it.copy(
+                    sortView = event.sortView
+                ) }.also {
+                    _sortBy.value = _state.value.sortView
+                }
             }
             is Events.HideEditDialog -> {
                 _state.update { it.copy(
@@ -162,19 +170,19 @@ class ViewModel(private val dao: Dao): ViewModel() {
         ) }
     }
 
-    fun getTotalSpendThisMonth(startOfMonthInMillis: Long, currentTimeMillis: Long): Flow<SummaryData> {
-        return dao.getOverView(startOfMonthInMillis,currentTimeMillis)
+    fun getTotalSpendThisMonth(): Flow<SummaryData> {
+        return dao.getOverView(_startDateInMillis.value,_endDateInMillis.value)
     }
 
     fun getTagsByTag(text: String): Flow<List<Tags>> {
         return dao.getTagsByTags("$text%")
     }
 
-    fun getExpenseByTag(startOfMonthInMillis: Long, currentTimeMillis: Long): Flow<List<TransactionByTag>> {
-        return dao.getExpenseByTag(startOfMonthInMillis,currentTimeMillis)
+    fun getExpenseByTag(): Flow<List<TransactionByTag>> {
+        return dao.getExpenseByTag(_startDateInMillis.value,_endDateInMillis.value)
     }
 
-    fun getIncomeByTag(startOfMonthInMillis: Long, currentTimeMillis: Long): Flow<List<TransactionByTag>> {
-        return dao.getIncomeByTag(startOfMonthInMillis,currentTimeMillis)
+    fun getIncomeByTag(): Flow<List<TransactionByTag>> {
+        return dao.getIncomeByTag(_startDateInMillis.value,_endDateInMillis.value)
     }
 }

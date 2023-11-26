@@ -15,7 +15,7 @@ import androidx.room.Room
 import com.diffy.broke.database.Databases
 import com.diffy.broke.screens.BackupPage
 import com.diffy.broke.screens.SummaryScreen
-import com.diffy.broke.screens.TransactionsScreen
+import com.diffy.broke.screens.MainScreen
 import com.diffy.broke.ui.theme.BrokeTheme
 import de.raphaelebner.roomdatabasebackup.core.RoomBackup
 import java.util.concurrent.Executors
@@ -28,7 +28,10 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             Databases::class.java,
             "broke.db"
-        ).setQueryExecutor(Executors.newSingleThreadExecutor()).addMigrations(Databases.migrate1to2).build()
+        )
+        .setQueryExecutor(Executors.newSingleThreadExecutor())
+        .addMigrations(Databases.migrate1to2)
+        .build()
     }
 
     private val viewmodel by viewModels<com.diffy.broke.ViewModel> (
@@ -48,16 +51,15 @@ class MainActivity : ComponentActivity() {
             BrokeTheme {
                 val state by viewmodel.state.collectAsState()
                 val navController = rememberNavController()
-
                 NavHost(navController = navController, startDestination = "transactions-screen") {
                     composable("transactions-screen" ) {
-                        TransactionsScreen(state = state, onEvent = viewmodel::onEvent, navController,viewmodel)
+                        MainScreen(state = state, onEvent = viewmodel::onEvent, navController,viewmodel)
                     }
                     composable("backup-page") {
                         BackupPage(db,backup)
                     }
                     composable("summary") {
-                        SummaryScreen(viewmodel)
+                        SummaryScreen(viewmodel,state,viewmodel::onEvent)
                     }
                 }
             }

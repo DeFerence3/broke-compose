@@ -1,4 +1,4 @@
-package com.diffy.broke
+package com.diffy.broke.state
 
 enum class SortView {
     INCOME,

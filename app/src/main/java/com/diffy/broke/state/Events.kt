@@ -1,4 +1,4 @@
-package com.diffy.broke
+package com.diffy.broke.state
 
 import com.diffy.broke.database.Tags
 import com.diffy.broke.database.Transactions
