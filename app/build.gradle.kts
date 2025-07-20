@@ -1,20 +1,26 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("dagger.hilt.android.plugin")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android.gradle.plugin)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
     namespace = "com.diffy.broke"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.diffy.broke"
-        minSdk = 26
-        targetSdk = 34
-        versionCode = 7
-        versionName = "v2.5.1"
+        minSdk = 24
+        targetSdk = 36
+        versionCode = 1
+        versionName = "0.0.1"
 
 //        multiDexEnabled true
 
@@ -23,9 +29,13 @@ android {
             useSupportLibrary = true
         }
 
-        ksp {
-            arg("room.schemaLocation","$projectDir/schemas")
-        }
+//        ksp {
+//            arg("room.schemaLocation","$projectDir/schemas")
+//        }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     sourceSets {
@@ -36,7 +46,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles (
+            proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
@@ -49,19 +59,22 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/INDEX.LIST"
         }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin{
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+    kotlin.compilerOptions.optIn.add("kotlin.time.ExperimentalTime")
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
     }
@@ -74,54 +87,60 @@ android {
 
 dependencies {
 
-    implementation (platform("org.jetbrains.kotlin:kotlin-bom:1.9.20"))
-    implementation (platform("androidx.compose:compose-bom:2024.05.00"))
-    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation( "androidx.compose.ui:ui-test-junit4:1.6.7")
-    debugImplementation ("androidx.compose.ui:ui-tooling")
-    debugImplementation( "androidx.compose.ui:ui-test-manifest")
-    testImplementation ("junit:junit:4.13.2")
-    implementation ("androidx.core:core-ktx:1.13.1")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
-    implementation ("androidx.activity:activity-compose:1.9.0")
-    implementation ("androidx.compose.ui:ui")
-    implementation ("androidx.compose.ui:ui-graphics")
-    implementation ("androidx.compose.ui:ui-tooling-preview")
-    implementation ("androidx.compose.material3:material3:1.2.1")
-    implementation ("androidx.core:core-ktx:1.13.1")
+    implementation(platform(libs.kotlin.bom))
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.ui.test.junit4)
+    androidTestImplementation(platform(libs.compose.bom))
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
+    testImplementation(libs.junit.junit)
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
+    implementation(libs.core.ktx)
 
-    //roomdb
-    val roomVer = "2.6.0" //don't upgrade to 2.6.1
-    implementation ("androidx.room:room-ktx:$roomVer")
-    ksp ("androidx.room:room-compiler:$roomVer")
+    //room-db
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     //Dagger - Hilt
-    implementation("com.google.dagger:hilt-android:2.50")
-    ksp("com.google.dagger:hilt-compiler:2.48.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 
-    //room backup
-    implementation ("de.raphaelebner:roomdatabasebackup:1.0.0-beta13")
+    //room-backup
+    implementation(libs.roomdatabasebackup)
 
-    //extended icons
-    implementation ("androidx.compose.material:material-icons-extended")
+    //extended-icons
+    implementation(libs.material.icons.extended)
 
     //navigation
-    implementation( "androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.navigation.compose)
 
-    //preferences datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    //Kotlinx-serialization
+    implementation(libs.kotlinx.serialization.json)
 
-    //leak canary
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
+    //preferences-datastore
+    implementation(libs.datastore.preferences)
 
-    //gdrive backup
-    implementation( "com.google.android.gms:play-services-drive:17.0.0")
-    implementation ("com.google.android.gms:play-services-auth:20.7.0")
-    implementation ("com.google.auth:google-auth-library-oauth2-http:1.11.0")
-    implementation ("com.google.apis:google-api-services-drive:v3-rev136-1.25.0")
-    implementation ("com.google.api-client:google-api-client-android:2.0.0")
-    implementation ("com.google.api-client:google-api-client:2.0.0")
+    //MMKV
+    implementation(libs.mmkv)
+
+    //leak-canary
+    debugImplementation(libs.leakcanary.android)
+
+    //google-drive-backup
+    implementation(libs.play.services.drive)
+    implementation(libs.play.services.auth)
+    implementation(libs.google.auth.library.oauth2.http)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.client)
 
 }

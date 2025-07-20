@@ -1,0 +1,58 @@
+package com.diffy.broke.presentation.core.ui
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
+
+@Serializable
+open class Route(val title: String) {
+    @Serializable
+    data object Transaction: Route("Transaction")
+
+    @Serializable
+    data object Summary: Route("Summary")
+
+    @Serializable
+    data object Settings: Route("Settings")
+
+    @Serializable
+    data object Tags: Route("Tags")
+
+    @Serializable
+    data object Backup: Route("Backup")
+
+    @Serializable
+    data object Home: Route("Home")
+
+    @Serializable
+    data object AccountHead: Route("AccountHead")
+
+    @Serializable
+    data object AccountGroup: Route("AccountGroup")
+
+    @Serializable
+    data object Main: Route("Main")
+
+    @Serializable
+    data class Search(
+        val searchType: String?,
+        val key: String,
+    ): Route("Search"){
+        companion object {
+            fun from(savedStateHandle: SavedStateHandle) = savedStateHandle.toRoute<Search>()
+        }
+    }
+
+    companion object {
+        fun fromRoute(route: String?): Route? {
+            return when (route) {
+                Transaction.title -> Transaction
+                Summary.title -> Summary
+                Tags.title -> Tags
+                Backup.title -> Backup
+                Home.title -> Home
+                else -> null
+            }
+        }
+    }
+}
