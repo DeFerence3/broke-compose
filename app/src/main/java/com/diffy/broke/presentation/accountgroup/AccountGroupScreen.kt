@@ -1,11 +1,9 @@
 package com.diffy.broke.presentation.accountgroup
 
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,26 +11,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.diffy.broke.R
 import com.diffy.broke.data.entity.Classification
 import com.diffy.broke.domain.model.AccountGroup
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
 import com.diffy.broke.presentation.core.templates.ScaffoldTemplate
+import com.diffy.broke.presentation.core.ui.components.BrokeDialog
 import com.diffy.broke.presentation.core.ui.util.ObserveEvent
 import kotlinx.coroutines.flow.Flow
 
@@ -62,60 +58,32 @@ fun AccountGroupScreen(
 
     // Dialog for adding or editing an account group
     (state.selectedAccountGroup != null).OnShowDialog {
-        Dialog(
-            onDismissRequest = { onEvent(AccountGroupEvent.HideAddOrEditDialog) }
+        BrokeDialog(
+            title = if (state.selectedAccountGroup?.id == 0) "Add Account Group" else "Edit Account Group",
+            onNegativeAction = { onEvent(AccountGroupEvent.HideAddOrEditDialog) },
+            onPositiveAction = { onEvent(AccountGroupEvent.SaveAccountHead) },
+            negativeText = "Cancel",
+            positiveText = "Submit",
+            positiveButtonEnabled = !state.selectedAccountGroup?.accountGroupName.isNullOrBlank()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .background(androidx.compose.material3.MaterialTheme.colorScheme.surface, androidx.compose.foundation.shape.RoundedCornerShape(8.dp)), // Added background and shape
-                verticalArrangement = Arrangement.spacedBy(16.dp), // Increased spacing
-                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally // Center dialog content
-            ) {
-                Text(
-                    text = if (state.selectedAccountGroup?.id == null) "Add Account Group" else "Edit Account Group",
-                    style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.primary
-                )
-                OutlinedTextField(
-                    value = state.selectedAccountGroup?.accountGroupName ?: "",
-                    onValueChange = { newValue ->
-                        // Ensure a new AccountGroup instance is created or copied correctly
-                        val updatedAccountGroup = state.selectedAccountGroup?.copy(accountGroupName = newValue)
-                            ?: AccountGroup(
-                                id = 0,accountGroupName = newValue,
-                                accountHeads = emptyList(),
-                                classification = Classification.Capital,
-                                description = null
-                            )
-                        onEvent(AccountGroupEvent.SelectAccountGroup(updatedAccountGroup))
-                    },
-                    label = { Text("Account Group Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true // Prevent multiline input for name
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { onEvent(AccountGroupEvent.HideAddOrEditDialog) },
-                        modifier = Modifier.padding(end = 8.dp)
-                    ) {
-                        Text(text = "Cancel")
-                    }
-                    Button(
-                        onClick = { onEvent(AccountGroupEvent.SaveAccountHead) },
-                        enabled = !state.selectedAccountGroup?.accountGroupName.isNullOrBlank() // Enable only if name is not blank
-                    ) {
-                        Text(text = "Submit")
-                    }
-                }
-            }
+            OutlinedTextField(
+                value = state.selectedAccountGroup?.accountGroupName ?: "",
+                onValueChange = { newValue ->
+                    // Ensure a new AccountGroup instance is created or copied correctly
+                    val updatedAccountGroup = state.selectedAccountGroup?.copy(accountGroupName = newValue)
+                        ?: AccountGroup(
+                            id = 0,accountGroupName = newValue,
+                            accountHeads = emptyList(),
+                            classification = Classification.Capital,
+                            description = null
+                        )
+                    onEvent(AccountGroupEvent.SelectAccountGroup(updatedAccountGroup))
+                },
+                label = { Text("Account Group Name") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true // Prevent multiline input for name
+            )
+
         }
     }
 
@@ -160,7 +128,6 @@ fun AccountGroupScreen(
                     items(state.accountGroups, key = { it.id }) { group ->
                         AccountGroupItem(group = group) {
                             onEvent(AccountGroupEvent.SelectAccountGroup(group))
-                            onEvent(AccountGroupEvent.AddAccountGroup)
                         }
                     }
                 }
