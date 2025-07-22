@@ -31,5 +31,11 @@ data class AccountHead(
                 accountGroup = AccountGroup.fromEntity(entity.accountGroup)
             )
         }
+
+        fun new() = AccountHead(
+            id = 0,
+            accountHeadName = "",
+            accountGroup = null,
+        )
     }
 }

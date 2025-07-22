@@ -2,6 +2,7 @@ package com.diffy.broke.presentation.accounthead
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.diffy.broke.domain.model.AccountHead
 import com.diffy.broke.domain.use_case.accountgroup.SearchAccountGroupUsecase
 import com.diffy.broke.domain.use_case.accounthead.SearchAccountHeadUsecase
 import com.diffy.broke.domain.use_case.accounthead.UpseartAccountHeadUsecase
@@ -23,24 +24,25 @@ class AccountHeadVM @javax.inject.Inject constructor(
     val oneTimeEventChannelFlow = _oneTimeEventChannelFlow.receiveAsFlow()
 
     init {
+        updateState { it.copy(isLoading = true) }
         viewModelScope.launch {
             searchAccountHeadUsecase("").collectLatest{ heads ->
-                updateState { it.copy(accountHeads = heads) }
+                updateState { it.copy(accountHeads = heads, isLoading = false) }
             }
         }
     }
 
     fun onEvent(event: AccountHeadEvent) {
         when (event) {
-            AccountHeadEvent.AddAccountHead -> updateState { it.copy(isAddOrEditDialogShowing = true) }
-            AccountHeadEvent.HideAddOrEditDialog -> updateState { it.copy(isAddOrEditDialogShowing = false, selectedAccountHead = null) }
+            AccountHeadEvent.AddAccountHead -> updateState { it.copy(selectedAccountHead = AccountHead.new()) }
+            AccountHeadEvent.HideAddOrEditDialog -> updateState { it.copy(selectedAccountHead = null) }
             is AccountHeadEvent.SelectAccountHead -> updateState { it.copy(selectedAccountHead = event.accountHead) }
             AccountHeadEvent.SaveAccountHead -> {
                 val currentSelectedAccountGroup = state.value.selectedAccountHead
                 if (!currentSelectedAccountGroup?.accountHeadName.isNullOrBlank() && currentSelectedAccountGroup.accountGroup != null)
                 viewModelScope.launch {
                     upsertAccountHeadUsecase(accountHead = currentSelectedAccountGroup).collectLatest {
-                        Log.i("Broke", "UpseartAccountHead---> $it")
+                        updateState { it.copy(selectedAccountHead = null) }
                     }
                 }
             }

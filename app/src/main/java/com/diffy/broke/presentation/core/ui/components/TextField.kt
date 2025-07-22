@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 fun ClickableTextField(
     value: String,
     onClick: () -> Unit,
-    leadingIcon: @Composable () -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
     label: String
 ) {
     OutlinedTextField(
