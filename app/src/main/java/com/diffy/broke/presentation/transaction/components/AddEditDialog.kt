@@ -27,7 +27,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,17 +58,14 @@ fun AddEditDialog(
     state: TransactionStates,
     onEvent: (TransactionEvents) -> Unit,
 ) {
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableLongStateOf(0L) }
     val selectedTransaction = state.selectedTransaction
+    var showDialog by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableLongStateOf(selectedTransaction?.day ?: System.currentTimeMillis()) }
     val datePickerState = rememberDatePickerState( initialSelectedDateMillis = selectedDate )
-    var title by remember { mutableStateOf("") }
-    var id by remember { mutableIntStateOf(0) }
-    var buttontext by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-    var transactionTitle by remember { mutableStateOf("") }
-    var fromAccount by remember { mutableStateOf<AccountHead?>(null) }
-    var toAccount by remember { mutableStateOf<AccountHead?>(null) }
+    var amount by remember { mutableStateOf(selectedTransaction?.amount ?: "") }
+    var transactionTitle by remember { mutableStateOf(selectedTransaction?.notes ?: "") }
+    var fromAccount by remember { mutableStateOf(selectedTransaction?.fromAccountHead) }
+    var toAccount by remember { mutableStateOf(selectedTransaction?.toAccountHead) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val fromAccountSelector =
         rememberLauncherForActivityResult(
@@ -86,19 +82,6 @@ fun AddEditDialog(
             })
 
     val formFocusRequesters = List(4) { FocusRequester() }
-
-    if (selectedTransaction != null) {
-        selectedDate = selectedTransaction.day
-        transactionTitle = selectedTransaction.notes
-        amount = selectedTransaction.amount.toString()
-        id = selectedTransaction.id
-        title = stringResource(R.string.edit_transaction)
-        buttontext = stringResource(R.string.edit)
-    } else {
-        selectedDate = System.currentTimeMillis()
-        title = stringResource(R.string.add_transaction)
-        buttontext = stringResource(R.string.add)
-    }
 
     if (showDialog) {
         selectedDate = datePickerScreen(
@@ -118,7 +101,7 @@ fun AddEditDialog(
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false
         ),
-        title = { Text(text = title) },
+        title = { Text(text = if (selectedTransaction?.id != null) stringResource(R.string.edit_transaction) else stringResource(R.string.add_transaction)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -215,7 +198,7 @@ fun AddEditDialog(
             Button(
                 onClick = {
                     val transaction = castToTransaction(
-                        id = id,
+                        id = selectedTransaction?.id ?: 0,
                         title = transactionTitle,
                         amount = amount,
                         day = selectedDate,
@@ -225,7 +208,7 @@ fun AddEditDialog(
                     onEvent(TransactionEvents.CreateTransaction(transaction))
                 }
             ) {
-                Text(text = buttontext)
+                Text(text = if (selectedTransaction?.id != null) stringResource(R.string.add) else stringResource(R.string.edit))
             }
         },
         dismissButton = {
