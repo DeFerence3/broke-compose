@@ -26,8 +26,8 @@ class AccountGroupVM @javax.inject.Inject constructor(
     val oneTimeEventChannelFlow = oneTimeEventChannel.receiveAsFlow()
 
     init {
+        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
             fetchInitialData()
         }
     }
