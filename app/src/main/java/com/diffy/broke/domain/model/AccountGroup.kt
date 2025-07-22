@@ -24,5 +24,14 @@ data class AccountGroup(
                 description = entity.description
             )
         }
+
+        fun new() = AccountGroup(
+            id = 0,
+            accountGroupName = "",
+            accountHeads = emptyList(),
+            classification = Classification.Asset,
+            parentGroup = null,
+            description = null
+        )
     }
 }

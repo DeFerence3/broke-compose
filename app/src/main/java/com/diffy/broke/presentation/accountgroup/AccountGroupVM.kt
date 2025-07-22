@@ -1,6 +1,7 @@
 package com.diffy.broke.presentation.accountgroup
 
 import androidx.lifecycle.viewModelScope
+import com.diffy.broke.domain.model.AccountGroup
 import com.diffy.broke.domain.use_case.accountgroup.SearchAccountGroupUsecase
 import com.diffy.broke.domain.use_case.accountgroup.UpseartAccountGroupUsecase
 import kotlinx.coroutines.channels.Channel
@@ -41,7 +42,7 @@ class AccountGroupVM @javax.inject.Inject constructor(
                             upseartAccountGroupUsecase(currentSelectedAccountGroup).collectLatest {
                                 fetchInitialData()
                                 oneTimeEventChannel.send(AccountGroupOneTimeEvent.Success("Account Group Saved Successfully!"))
-                                updateState{ it.copy(isAddOrEditDialogShowing = false, selectedAccountGroup = null) } // Hide dialog and clear selection
+                                updateState{ it.copy(selectedAccountGroup = null) } // Hide dialog and clear selection
                             }
                         } catch (e: Exception) {
                             oneTimeEventChannel.send(AccountGroupOneTimeEvent.Error("Failed to save account group: ${e.localizedMessage}"))
@@ -53,8 +54,8 @@ class AccountGroupVM @javax.inject.Inject constructor(
                     }
                 }
             }
-            AccountGroupEvent.AddAccountGroup -> updateState { it.copy(isAddOrEditDialogShowing = true) }
-            AccountGroupEvent.HideAddOrEditDialog -> updateState { it.copy(isAddOrEditDialogShowing = false,selectedAccountGroup = null) }
+            AccountGroupEvent.AddAccountGroup -> updateState { it.copy(selectedAccountGroup = AccountGroup.new()) }
+            AccountGroupEvent.HideAddOrEditDialog -> updateState { it.copy(selectedAccountGroup = null) }
             is AccountGroupEvent.SelectAccountGroup -> updateState { it.copy(selectedAccountGroup = event.accountGroup) }
         }
     }

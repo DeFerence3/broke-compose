@@ -61,7 +61,7 @@ fun AccountGroupScreen(
     }
 
     // Dialog for adding or editing an account group
-    state.isAddOrEditDialogShowing.OnShowDialog {
+    (state.selectedAccountGroup != null).OnShowDialog {
         Dialog(
             onDismissRequest = { onEvent(AccountGroupEvent.HideAddOrEditDialog) }
         ) {
