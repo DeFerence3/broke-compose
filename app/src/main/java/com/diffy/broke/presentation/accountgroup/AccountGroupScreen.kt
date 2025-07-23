@@ -1,6 +1,7 @@
 package com.diffy.broke.presentation.accountgroup
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,10 +26,12 @@ import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
 import com.diffy.broke.data.entity.Classification
 import com.diffy.broke.domain.model.AccountGroup
+import com.diffy.broke.presentation.core.search.SearchContract
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
 import com.diffy.broke.presentation.core.templates.ScaffoldTemplate
 import com.diffy.broke.presentation.core.ui.components.BrokeDialog
+import com.diffy.broke.presentation.core.ui.components.ClickableTextField
 import com.diffy.broke.presentation.core.ui.util.ObserveEvent
 import kotlinx.coroutines.flow.Flow
 
@@ -44,7 +47,15 @@ fun AccountGroupScreen(
 ) {
     val context = LocalContext.current
 
-    // Observe one-time events, like showing a Toast
+    val classification = rememberLauncherForActivityResult(
+        contract = SearchContract(Classification::class),
+        onResult = { item ->
+            item?.let { newValue ->
+                val updatedAccountGroup = state.selectedAccountGroup?.copy(classification = newValue) ?: AccountGroup.new()
+                onEvent(AccountGroupEvent.SelectAccountGroup(updatedAccountGroup))
+            }
+        })
+
     oneTimeEventChannelFlow.ObserveEvent {
         when (it) {
             is AccountGroupOneTimeEvent.Success -> {
@@ -69,19 +80,19 @@ fun AccountGroupScreen(
             OutlinedTextField(
                 value = state.selectedAccountGroup?.accountGroupName ?: "",
                 onValueChange = { newValue ->
-                    // Ensure a new AccountGroup instance is created or copied correctly
                     val updatedAccountGroup = state.selectedAccountGroup?.copy(accountGroupName = newValue)
-                        ?: AccountGroup(
-                            id = 0,accountGroupName = newValue,
-                            accountHeads = emptyList(),
-                            classification = Classification.Capital,
-                            description = null
-                        )
+                        ?: AccountGroup.new()
                     onEvent(AccountGroupEvent.SelectAccountGroup(updatedAccountGroup))
                 },
                 label = { Text("Account Group Name") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true // Prevent multiline input for name
+                singleLine = true
+            )
+
+            ClickableTextField(
+                value = state.selectedAccountGroup?.classification?.name ?: "",
+                onClick = { classification.launch(Unit)},
+                label = "Classification"
             )
 
         }
@@ -153,8 +164,6 @@ fun AccountGroupItem(group: AccountGroup, onClick: (AccountGroup) -> Unit) {
                 style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
             )
-            // You can add more details here if AccountGroup has more properties
-            // Text(text = "Accounts: ${group.accounts.size}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

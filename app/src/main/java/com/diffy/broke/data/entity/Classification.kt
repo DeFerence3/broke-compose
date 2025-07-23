@@ -1,6 +1,10 @@
 package com.diffy.broke.data.entity
 
-enum class Classification {
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+enum class Classification: Parcelable {
     Asset,
     Liability,
     Income,
