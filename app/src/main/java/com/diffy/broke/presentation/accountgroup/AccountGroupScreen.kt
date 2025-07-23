@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -152,17 +153,23 @@ fun AccountGroupItem(group: AccountGroup, onClick: (AccountGroup) -> Unit) {
     androidx.compose.material3.Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(group) }, // Made card clickable
+            .clickable { onClick(group) },
         elevation = androidx.compose.material3.CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = androidx.compose.material3.MaterialTheme.shapes.medium
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = group.accountGroupName,
                 style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = group.classification.name
             )
         }
     }
