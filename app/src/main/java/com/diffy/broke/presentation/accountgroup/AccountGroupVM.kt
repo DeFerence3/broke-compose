@@ -40,9 +40,8 @@ class AccountGroupVM @javax.inject.Inject constructor(
                     viewModelScope.launch {
                         try {
                             upseartAccountGroupUsecase(currentSelectedAccountGroup).collectLatest {
-                                fetchInitialData()
                                 oneTimeEventChannel.send(AccountGroupOneTimeEvent.Success("Account Group Saved Successfully!"))
-                                updateState{ it.copy(selectedAccountGroup = null) } // Hide dialog and clear selection
+                                updateState{ it.copy(selectedAccountGroup = null) }
                             }
                         } catch (e: Exception) {
                             oneTimeEventChannel.send(AccountGroupOneTimeEvent.Error("Failed to save account group: ${e.localizedMessage}"))
