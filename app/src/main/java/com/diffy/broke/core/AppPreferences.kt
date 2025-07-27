@@ -22,7 +22,7 @@ class AppPreferences @Inject constructor(@ApplicationContext context: Context) {
 
     private object Keys {
         val LAST_BACKUP_DATE = longPreferencesKey("last_backup_date")
-        val LAST_RESTORE_DATE = longPreferencesKey("last_backup_date")
+        val LAST_RESTORE_DATE = longPreferencesKey("last_restore_date")
     }
 
     val lastBackupDate: Flow<Date?> = dataStore.data.map {

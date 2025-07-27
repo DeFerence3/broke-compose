@@ -115,7 +115,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
 
     //room-backup
-    implementation(libs.roomdatabasebackup)
+//    implementation(libs.roomdatabasebackup)
 
     //extended-icons
     implementation(libs.material.icons.extended)
@@ -134,6 +134,20 @@ dependencies {
 
     //leak-canary
     debugImplementation(libs.leakcanary.android)
+
+    implementation(libs.opencsv)
+
+    //Androidx Security
+    implementation(libs.security.crypto)
+
+    //Google Guava
+    implementation(libs.guava)
+
+    //Material Design Implementation
+    implementation(libs.material)
+
+    //Apache commons io
+    implementation(libs.commons.io)
 
     //google-drive-backup
     implementation(libs.play.services.drive)

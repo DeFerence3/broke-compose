@@ -1,5 +1,7 @@
 [versions]
 agp = "8.11.1"
+commonsIo = "2.20.0"
+guava = "33.4.8-jre"
 kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
 activityCompose = "1.10.1"
@@ -20,16 +22,21 @@ leakcanaryAndroid = "3.0-alpha-1"
 lifecycleRuntimeKtx = "2.9.1"
 material3 = "1.4.0-alpha17"
 navigationCompose = "2.9.1"
+opencsv = "5.11.2"
 playServicesAuth = "21.3.0"
 playServicesDrive = "17.0.0"
 roomdatabasebackup = "1.1.0"
 #don't upgrade to 2.6.1
 room = "2.7.2"
+securityCrypto = "1.1.0-beta01"
 uiTestJunit4 = "1.8.3"
 mmkv = "2.2.2"
+appcompat = "1.7.1"
+material = "1.12.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
@@ -38,6 +45,7 @@ google-api-client = { module = "com.google.api-client:google-api-client", versio
 google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
 google-api-services-drive = { module = "com.google.apis:google-api-services-drive", version.ref = "googleApiServicesDrive" }
 google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuthLibraryOauth2Http" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -50,11 +58,13 @@ lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", v
 material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+opencsv = { module = "com.opencsv:opencsv", version.ref = "opencsv" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-drive = { module = "com.google.android.gms:play-services-drive", version.ref = "playServicesDrive" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 roomdatabasebackup = { module = "de.raphaelebner:roomdatabasebackup", version.ref = "roomdatabasebackup" }
+security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 ui = { module = "androidx.compose.ui:ui" }
 ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
@@ -62,6 +72,8 @@ ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 mmkv = { group = "com.tencent", name = "mmkv", version.ref = "mmkv" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -72,3 +84,4 @@ hilt-android-gradle-plugin = { id = "com.google.dagger.hilt.android", version.re
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 kotlin-parcelize = { id = "kotlin-parcelize"}
 androidx-room = { id = "androidx.room", version.ref = "room" }
+android-library = { id = "com.android.library", version.ref = "agp" }

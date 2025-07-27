@@ -12,7 +12,6 @@ import com.diffy.broke.data.repository.TransactionsRepoImpl
 import com.diffy.broke.domain.repository.AccountGroupRepo
 import com.diffy.broke.domain.repository.AccountHeadRepo
 import com.diffy.broke.domain.repository.TransactionsRepo
-import com.diffy.broke.presentation.MainActivity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,12 +52,6 @@ object RepositoryModule {
     @Singleton
     fun providePreferences(@ApplicationContext applicationContext: Context): AppPreferences {
         return AppPreferences(applicationContext)
-    }
-
-    @Provides
-    @Singleton
-    fun provideActivity(): MainActivity {
-        return MainActivity()
     }
 
 }

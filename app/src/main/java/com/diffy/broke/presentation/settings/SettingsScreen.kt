@@ -1,5 +1,6 @@
 package com.diffy.broke.presentation.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,17 +21,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.ui.theme.conf.DarkTheme
+import com.diffy.broke.presentation.core.ui.util.ObserveEvent
 import com.diffy.broke.presentation.core.ui.util.format
 import com.diffy.broke.presentation.settings.components.ContentedSettingItem
 import com.diffy.broke.presentation.settings.components.SettingItem
 import com.diffy.broke.presentation.settings.components.SettingsGroup
 import com.diffy.broke.presentation.settings.components.SettingsSaver
 import com.diffy.settings.ui.settings.components.ItemPosition
+import kotlinx.coroutines.flow.Flow
 
 /**
  * See [Settings Impl](https://github.com/DeFerence3/Settings.git) for more information.
@@ -41,12 +45,20 @@ fun SettingsScreen(
     drawerClick: (SlidingDrawerState) -> Unit,
     drawerState: SlidingDrawerState,
     state: SettingsState,
-    onEvent: (SettingsEvents) -> Unit
+    onEvent: (SettingsEvents) -> Unit,
+    eventChanel: Flow<SettingsOneTimeEvents>
 ) {
     
     val appSettings by SettingsSaver.AppSettingsStateFlow.collectAsState()
     val isDark = appSettings.themePreference.darkMode == DarkTheme.On || (appSettings.themePreference.darkMode == DarkTheme.System && isSystemInDarkTheme())
     val settingsGroups = remember(appSettings) { SettingsGroup.getSettings(appSettings,isDark) }
+    val context = LocalContext.current
+
+    eventChanel.ObserveEvent { events: SettingsOneTimeEvents ->
+        when(events){
+            is SettingsOneTimeEvents.ShowToast -> Toast.makeText(context, events.message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(
         topBar = {

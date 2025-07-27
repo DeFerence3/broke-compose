@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.diffy.broke.core.AppPreferences
 import com.diffy.broke.data.Databases
-import com.diffy.broke.domain.use_case.backupandrestore.BackupDatabaseUseCase
-import com.diffy.broke.domain.use_case.backupandrestore.RestoreDatabaseUseCase
+import com.diffy.broke.data.backup.RoomBackup
+import com.diffy.broke.data.repository.setActivityContextProvider
 import com.diffy.broke.presentation.core.LocalThemePreference
 import com.diffy.broke.presentation.core.ui.theme.BrokeTheme
 import com.diffy.broke.presentation.core.ui.theme.SettingsProvider
@@ -24,7 +24,10 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var preferences: AppPreferences
 
+    private val roomBackup = RoomBackup(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setActivityContextProvider{ roomBackup }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -37,21 +40,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    fun backup(){
-        BackupDatabaseUseCase(
-            db = db,
-            preferences = preferences,
-            activity = this
-        )
-    }
-
-    fun restore(){
-        RestoreDatabaseUseCase(
-            activity = this,
-            db = db,
-            preferences = preferences,
-        )
     }
 }

@@ -65,7 +65,8 @@ fun SlidingDrawerContentHost(
                 drawerClick = onDrawerClick,
                 drawerState = drawerState,
                 state = state,
-                onEvent = vm::onEvent
+                onEvent = vm::onEvent,
+                eventChanel = vm.eventChanel
             )
         }
         composable<Route.Tags> {
