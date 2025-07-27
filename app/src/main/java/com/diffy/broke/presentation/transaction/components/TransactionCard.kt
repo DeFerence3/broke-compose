@@ -100,7 +100,7 @@ fun TransactionCard(
 
             Text(
                 text = "${transaction.fromAccountHead.accountHeadName} → ${transaction.toAccountHead.accountHeadName}",
-                style = MaterialTheme.typography.bodyMediumEmphasized,
+                style = MaterialTheme.typography.titleMediumEmphasized,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
