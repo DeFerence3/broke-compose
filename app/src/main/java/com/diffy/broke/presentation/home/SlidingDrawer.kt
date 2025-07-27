@@ -30,7 +30,6 @@ import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.ui.Route
 import com.diffy.broke.presentation.core.ui.navigation.NavigationDestinations
 import com.diffy.broke.presentation.core.ui.navigation.SlidingDrawerContentHost
-import kotlin.math.roundToInt
 
 @Composable
 fun SlidingDrawer() {
@@ -43,13 +42,17 @@ fun SlidingDrawer() {
             ?: NavigationDestinations.TRANSACTIONS
     }
     var drawerState by remember { mutableStateOf(SlidingDrawerState.Closed) }
-    val screenWidth = remember {
-        derivedStateOf { (configuration.containerSize.width * density).roundToInt() }
-    }
+    val screenWidthDp = configuration.containerSize.width.dp
+    val screenWidth = remember { with(density) { screenWidthDp } }
     val offsetValue by remember { derivedStateOf { (screenWidth.value / 4.5).dp } }
     val animatedOffset by animateDpAsState(
         targetValue = if (drawerState.isOpened()) offsetValue else 0.dp,
         label = "Animated Offset"
+    )
+
+    val animateEdges by animateDpAsState(
+        targetValue = if (drawerState.isOpened()) 18.dp else 0.dp,
+        label = "Animated Edges"
     )
     val animatedScale by animateFloatAsState(
         targetValue = if (drawerState.isOpened()) 0.9f else 1f,
@@ -81,11 +84,11 @@ fun SlidingDrawer() {
 
         SlidingDrawerContentHost(
             modifier = Modifier
-                .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
                 .offset{
                     IntOffset(animatedOffset.roundToPx(), 0)
                 }
-                .scale(scale = animatedScale),
+                .scale(scale = animatedScale)
+                .clip(RoundedCornerShape(animateEdges)),
             navController = navHostController,
             drawerState = drawerState,
             onDrawerClick = { drawerState = it },
