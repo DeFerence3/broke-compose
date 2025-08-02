@@ -27,7 +27,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.diffy.broke.presentation.core.LocalSlidingDrawerNavController
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawer
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
-import com.diffy.broke.presentation.core.ui.Route
 import com.diffy.broke.presentation.core.ui.navigation.NavigationDestinations
 import com.diffy.broke.presentation.core.ui.navigation.SlidingDrawerContentHost
 
@@ -36,9 +35,9 @@ fun SlidingDrawer() {
     val navHostController = LocalSlidingDrawerNavController.current
     val configuration = LocalWindowInfo.current
     val density = LocalDensity.current.density
-    val currentRoute = navHostController.currentBackStackEntryAsState().value?.destination?.route?.let { Route.fromRoute(it) }
-    val selectedNavigationItem = remember(currentRoute) {
-        NavigationDestinations.entries.find { it.route == currentRoute }
+    val currentRouteName = navHostController.currentBackStackEntryAsState().value?.destination?.route
+    val selectedNavigationItem = remember(currentRouteName) {
+        NavigationDestinations.entries.find { it.route::class.qualifiedName == currentRouteName }
             ?: NavigationDestinations.TRANSACTIONS
     }
     var drawerState by remember { mutableStateOf(SlidingDrawerState.Closed) }

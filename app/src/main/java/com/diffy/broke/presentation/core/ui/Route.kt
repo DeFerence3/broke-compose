@@ -42,17 +42,4 @@ open class Route(val title: String) {
             fun from(savedStateHandle: SavedStateHandle) = savedStateHandle.toRoute<Search>()
         }
     }
-
-    companion object {
-        fun fromRoute(route: String?): Route? {
-            return when (route) {
-                Transaction.title -> Transaction
-                Summary.title -> Summary
-                Tags.title -> Tags
-                Backup.title -> Backup
-                Home.title -> Home
-                else -> null
-            }
-        }
-    }
 }
