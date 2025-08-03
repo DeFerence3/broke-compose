@@ -3,6 +3,7 @@
 package com.diffy.broke.presentation.transaction
 
 import com.diffy.broke.domain.model.Transaction
+import com.diffy.broke.presentation.core.enums.ViewType
 import kotlin.time.ExperimentalTime
 
 sealed interface TransactionEvents {
@@ -19,5 +20,7 @@ sealed interface TransactionEvents {
     data class CreateTransaction(val transaction: Transaction): TransactionEvents
     data class DeleteTransaction(val transaction: Transaction): TransactionEvents
     data class SetId(val id: Int) : TransactionEvents
+
+    data class SetViewType(val viewType: ViewType) : TransactionEvents
 
 }

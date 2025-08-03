@@ -110,7 +110,7 @@ fun Transaction(
                 item(
                     key = "extra-actions"
                 ) {
-                    MainAppbarExtraContent(state)
+                    MainAppbarExtraContent(state, onEvent)
                 }
                 items(
                     items = state.transactions,

@@ -12,16 +12,20 @@ import com.diffy.broke.domain.use_case.accounthead.SearchAccountHeadUsecase
 import com.diffy.broke.domain.use_case.transactions.CreateTransactionUseCase
 import com.diffy.broke.domain.use_case.transactions.DeleteTransactionUseCase
 import com.diffy.broke.domain.use_case.transactions.GetTransactionsUseCase
+import com.diffy.broke.presentation.core.enums.ViewType
+import com.diffy.broke.presentation.core.ui.util.getEndOfMonthInMillis
+import com.diffy.broke.presentation.core.ui.util.getEndOfWeekInMillis
+import com.diffy.broke.presentation.core.ui.util.getStartOfMonthInMillis
+import com.diffy.broke.presentation.core.ui.util.getStartOfWeekInMillis
+import com.diffy.broke.presentation.core.ui.util.getTodayEndInMillis
+import com.diffy.broke.presentation.core.ui.util.getTodayStartInMillis
 import com.diffy.broke.presentation.transaction.TransactionEvents.HideAddEditDialog
 import com.diffy.broke.presentation.transaction.TransactionEvents.SetSelectedTransaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,14 +41,8 @@ class TransactionVM @Inject constructor(
     private val session: Session
 ): ViewModel() {
 
-    private val _transactionState = MutableStateFlow(TransactionStates())
-    val state: StateFlow<TransactionStates> = _transactionState.asStateFlow()
-
-    val tempState: StateFlow<TransactionStates> = flow {
-        _transactionState.update { it.copy(loadingState = true) }
-        emit(TransactionStates(loadingState = true))
-
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),_transactionState.value)
+    private val _state = MutableStateFlow(TransactionStates())
+    val state: StateFlow<TransactionStates> = _state.asStateFlow()
 
     init {
        getTransactions()
@@ -52,9 +50,22 @@ class TransactionVM @Inject constructor(
 
     private fun getTransactions() {
         viewModelScope.launch {
+            val startTime = when(_state.value.viewType){
+                is ViewType.Custom -> (_state.value.viewType as ViewType.Custom).start
+                ViewType.ThisMonth -> getStartOfMonthInMillis()
+                ViewType.ThisWeek -> getStartOfWeekInMillis()
+                ViewType.Today -> getTodayStartInMillis()
+            }
+
+            val endTime = when(_state.value.viewType){
+                is ViewType.Custom -> (_state.value.viewType as ViewType.Custom).end
+                ViewType.ThisMonth -> getEndOfMonthInMillis()
+                ViewType.ThisWeek -> getEndOfWeekInMillis()
+                ViewType.Today -> getTodayEndInMillis()
+            }
             getTransactionsUseCase.invoke(
-                startTime = Instant.fromEpochMilliseconds(session.startDate),
-                endTime = Instant.fromEpochMilliseconds(session.endDate),
+                startTime = Instant.fromEpochMilliseconds(startTime),
+                endTime = Instant.fromEpochMilliseconds(endTime),
                 transactionsOrderBy = session.orderBy,
                 sortView = session.sortView
             ).collectLatest { transactionResult ->
@@ -96,29 +107,29 @@ class TransactionVM @Inject constructor(
             }
             is HideAddEditDialog -> updateState { it.copy(isAddEditDialogShowing = false) }
             is TransactionEvents.SetTransactionName -> {
-//                _transactionState.update { it.copy(
+//                _state.update { it.copy(
 //                    transactionName = event.packName
 //                ) }
             }
             is TransactionEvents.SetAmount -> {
-//                _transactionState.update { it.copy(
+//                _state.update { it.copy(
 //                    transactionAmount = event.transAmount
 //                ) }
             }
             is TransactionEvents.SetExpInc -> {
-//                _transactionState.update { it.copy(
+//                _state.update { it.copy(
 //                    isExp = event.isExp
 //                ) }
             }
             is TransactionEvents.ShowAddEditDialog -> updateState { it.copy(isAddEditDialogShowing = true) }
 
             is TransactionEvents.SetTransactionDate -> {
-                _transactionState.update { it.copy(
+                _state.update { it.copy(
                     transactionDateInMillis = event.time
                 ) }
             }
             is TransactionEvents.SetId -> {
-//                _transactionState.update { it.copy(
+//                _state.update { it.copy(
 //                    id = event.id
 //                ) }
             }
@@ -133,16 +144,18 @@ class TransactionVM @Inject constructor(
                     }
                 }
             }
+
+            is TransactionEvents.SetViewType -> updateState { it.copy(viewType = event.viewType) }.also { getTransactions() }
         }
     }
 
     private fun validateTransaction(transaction: Transaction): Transaction? {
-        if ( transaction.notes.isNullOrBlank()) {
-            return null
+        return if ( transaction.notes.isBlank()) {
+            null
         }else if ( transaction.amount.isNullOrBlank() || transaction.amount.toFloatOrNull() == null) {
-            return null
+            null
         }else{
-            return transaction
+            transaction
         }
     }
 
@@ -182,6 +195,6 @@ class TransactionVM @Inject constructor(
     }
 */
     private inline fun updateState(update: (TransactionStates) -> TransactionStates) {
-        _transactionState.value = update(_transactionState.value)
+        _state.value = update(_state.value)
     }
 }
