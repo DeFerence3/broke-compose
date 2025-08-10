@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
@@ -52,16 +54,18 @@ fun Search(
                     Text("No results found.", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                 }
             } else {
-                list.forEach { result ->
-                    ListItem(
-                        headlineContent = { Text(result.name, style = MaterialTheme.typography.bodyMedium) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onSelect(result)
-                            }
-                    )
-                    HorizontalDivider()
+                LazyColumn {
+                    items(list){ result ->
+                        ListItem(
+                            headlineContent = { Text(result.name, style = MaterialTheme.typography.bodyMedium) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onSelect(result)
+                                }
+                        )
+                        HorizontalDivider()
+                    }
                 }
             }
         }
