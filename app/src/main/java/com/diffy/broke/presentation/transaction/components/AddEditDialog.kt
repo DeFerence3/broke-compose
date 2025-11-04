@@ -2,7 +2,6 @@
 
 package com.diffy.broke.presentation.transaction.components
 
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -41,52 +40,36 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.diffy.broke.R
-import com.diffy.broke.domain.model.AccountHead
+import com.diffy.broke.domain.model.Category
 import com.diffy.broke.domain.model.Transaction
-import com.diffy.broke.presentation.core.search.SearchContract
+import com.diffy.broke.presentation.core.templates.OnShowDialog
 import com.diffy.broke.presentation.core.ui.components.ClickableTextField
 import com.diffy.broke.presentation.core.ui.util.dateInMillisToFormat
 import com.diffy.broke.presentation.core.ui.util.datePickerScreen
 import com.diffy.broke.presentation.transaction.TransactionEvents
-import com.diffy.broke.presentation.transaction.TransactionStates
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddEditDialog(
     modifier: Modifier = Modifier,
-    state: TransactionStates,
     onEvent: (TransactionEvents) -> Unit,
+    onSelectClick: () -> Unit,
+    selectedTransaction: Transaction
 ) {
-    val selectedTransaction = state.selectedTransaction
-    var showDialog by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableLongStateOf(selectedTransaction?.day ?: System.currentTimeMillis()) }
+    var showDatetimepicker by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableLongStateOf(selectedTransaction.day) }
     val datePickerState = rememberDatePickerState( initialSelectedDateMillis = selectedDate )
-    var amount by remember { mutableStateOf(selectedTransaction?.amount ?: "") }
-    var transactionTitle by remember { mutableStateOf(selectedTransaction?.notes ?: "") }
-    var fromAccount by remember { mutableStateOf(selectedTransaction?.fromAccountHead) }
-    var toAccount by remember { mutableStateOf(selectedTransaction?.toAccountHead) }
+    var amount by remember { mutableStateOf(selectedTransaction.amount ?: "") }
+    var transactionTitle by remember { mutableStateOf(selectedTransaction.notes) }
+    var category by remember { mutableStateOf(selectedTransaction.category) }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val fromAccountSelector =
-        rememberLauncherForActivityResult(
-            contract = SearchContract(AccountHead::class),
-            onResult = { item ->
-                fromAccount = item
-            })
-
-    val toAccountSelector =
-        rememberLauncherForActivityResult(
-            contract = SearchContract(AccountHead::class),
-            onResult = { item ->
-                toAccount = item
-            })
-
     val formFocusRequesters = List(4) { FocusRequester() }
 
-    if (showDialog) {
+    showDatetimepicker.OnShowDialog{
         selectedDate = datePickerScreen(
             datePickerState = datePickerState,
-            onShowDialogChange = { showDialog = it }
+            onShowDialogChange = { showDatetimepicker = it }
         )
     }
 
@@ -101,7 +84,7 @@ fun AddEditDialog(
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false
         ),
-        title = { Text(text = if (selectedTransaction?.id != null) stringResource(R.string.edit_transaction) else stringResource(R.string.add_transaction)) },
+        title = { Text(text = if (selectedTransaction.mode == "Edit") stringResource(R.string.edit_transaction) else stringResource(R.string.add_transaction)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -113,7 +96,7 @@ fun AddEditDialog(
                 ) {
                     FilterChip(
                         selected = false,
-                        onClick = { showDialog = !showDialog },
+                        onClick = { showDatetimepicker = !showDatetimepicker },
                         label = { Text(text = dateInMillisToFormat(selectedDate)) },
                         leadingIcon = {
                             Icon(
@@ -124,42 +107,32 @@ fun AddEditDialog(
                     )
                 }
                 ClickableTextField(
-                    value = fromAccount?.accountHeadName ?: "",
-                    onClick = { fromAccountSelector.launch(Unit) },
+                    value = category.categoryName,
+                    onClick = onSelectClick,
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.AccountBox,
-                            contentDescription = stringResource(R.string.accounthead)
+                            contentDescription = stringResource(R.string.category)
                         )
                     },
                     label = "From Account"
                 )
 
-                ClickableTextField(
-                    value = toAccount?.accountHeadName ?: "",
-                    onClick = {
-                        toAccountSelector.launch(Unit)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.AccountBox,
-                            contentDescription = stringResource(R.string.accounthead)
-                        )
-                    },
-                    label = "To Account"
-                )
                 OutlinedTextField(
                     modifier = Modifier
                         .focusRequester(formFocusRequesters[2])
                         .fillMaxWidth(),
-                    value = amount,
+                    value = selectedTransaction.amount,
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.CurrencyRupee,
                             contentDescription = stringResource(R.string.amount)
                         )
                     },
-                    onValueChange = { amount = it },
+                    onValueChange = {
+                        amount = it
+                        onEvent(TransactionEvents.SetSelectedTransaction(selectedTransaction.copy(amount = it)))
+                    },
                     label = {
                         Text(text = stringResource(R.string.amount))
                     },
@@ -178,8 +151,10 @@ fun AddEditDialog(
                         .focusRequester(formFocusRequesters[3])
                         .height(100.dp)
                         .fillMaxWidth(),
-                    value = transactionTitle,
-                    onValueChange = { transactionTitle= it },
+                    value = selectedTransaction.notes,
+                    onValueChange = {
+                        onEvent(TransactionEvents.SetSelectedTransaction(selectedTransaction.copy(notes = it)))
+                    },
                     label = {
                         Text(text = "Notes")
                     },
@@ -198,17 +173,17 @@ fun AddEditDialog(
             Button(
                 onClick = {
                     val transaction = castToTransaction(
-                        id = selectedTransaction?.id ?: 0,
+                        id = selectedTransaction.id,
                         title = transactionTitle,
                         amount = amount,
                         day = selectedDate,
-                        fromAccount = fromAccount!!,
-                        toAccount = toAccount!!
+                        fromAccount = category,
+                        toAccount = category
                     )
                     onEvent(TransactionEvents.CreateTransaction(transaction))
                 }
             ) {
-                Text(text = if (selectedTransaction?.id != null) stringResource(R.string.add) else stringResource(R.string.edit))
+                Text(text = if (selectedTransaction.mode == "View") stringResource(R.string.add) else stringResource(R.string.edit))
             }
         },
         dismissButton = {
@@ -228,13 +203,12 @@ fun castToTransaction(
     title: String,
     amount: String,
     day: Long,
-    fromAccount: AccountHead,
-    toAccount: AccountHead
+    fromAccount: Category,
+    toAccount: Category
 ): Transaction = Transaction(
     id = id,
     notes = title,
     amount = amount,
     day = day,
-    fromAccountHead = fromAccount,
-    toAccountHead = toAccount
+    category = fromAccount
 )

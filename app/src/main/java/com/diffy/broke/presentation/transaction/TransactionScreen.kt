@@ -35,6 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
+import com.diffy.broke.domain.model.Category
+import com.diffy.broke.domain.model.Transaction
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
 import com.diffy.broke.presentation.core.ui.components.MainAppbarExtraContent
@@ -44,15 +46,16 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun Transaction(
+fun TransactionScreen(
     state: TransactionStates,
     onEvent: (TransactionEvents) -> Unit,
     drawerClick: (SlidingDrawerState) -> Unit,
-    drawerState: SlidingDrawerState
+    drawerState: SlidingDrawerState,
+    onSelectClick: () -> Unit
 ) {
 
-    state.isAddEditDialogShowing.OnShowDialog{
-        AddEditDialog(state = state, onEvent = onEvent)
+    state.selectedTransaction.OnShowDialog{
+        AddEditDialog(onEvent = onEvent, onSelectClick = onSelectClick, selectedTransaction = it)
     }
 
     Scaffold(
@@ -61,7 +64,15 @@ fun Transaction(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    onEvent(TransactionEvents.ShowAddEditDialog)
+                    val emptyCategory = Category.new()
+                    val emptyTransaction = Transaction(
+                        id = 0,
+                        notes = "",
+                        amount = "",
+                        day = System.currentTimeMillis(),
+                        category = emptyCategory
+                    )
+                    onEvent(TransactionEvents.SetSelectedTransaction(emptyTransaction))
                 },
                 content = {
                     Icon(
@@ -119,7 +130,7 @@ fun Transaction(
                     var isMenuVisible by remember { mutableStateOf(false) }
                     TransactionCard(
                         transaction = it,
-                        onClick = {  },
+                        onClick = null,
                         onLongClick = { isMenuVisible = !isMenuVisible }
                     ) { pressOffset, itemHeight ->
                         DropdownMenu(

@@ -109,7 +109,7 @@ fun MainAppbarExtraContent(
         /*FilterChip(
             selected = false,
             onClick = {  },
-            label = { Text(text = orderBy.name) },
+            label = { Text(text = orderBy.categoryName) },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Sort,

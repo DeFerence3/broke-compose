@@ -20,15 +20,15 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import com.diffy.broke.R
-import com.diffy.broke.domain.model.AccountHead
+import com.diffy.broke.domain.model.Category
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FromAndToSelector(
     modifier: Modifier = Modifier
 ) {
-    var fromAccount by remember { mutableStateOf<AccountHead?>(null) }
-    var toAccount by remember { mutableStateOf<AccountHead?>(null) }
+    var fromAccount by remember { mutableStateOf<Category?>(null) }
+    var toAccount by remember { mutableStateOf<Category?>(null) }
 
 
 
@@ -38,7 +38,7 @@ fun FromAndToSelector(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = fromAccount?.accountHeadName ?: "",
+            value = fromAccount?.categoryName ?: "",
             onValueChange = { },
             modifier = Modifier
                 .focusRequester(formFocusRequesters[0])
@@ -49,7 +49,7 @@ fun FromAndToSelector(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
-                    contentDescription = stringResource(R.string.accounthead)
+                    contentDescription = stringResource(R.string.category)
                 )
             },
             enabled = false,
@@ -65,11 +65,11 @@ fun FromAndToSelector(
                 }
                 .focusRequester(formFocusRequesters[1])
                 .fillMaxWidth(),
-            value = toAccount?.accountHeadName ?: "",
+            value = toAccount?.categoryName ?: "",
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
-                    contentDescription = stringResource(R.string.accounthead)
+                    contentDescription = stringResource(R.string.category)
                 )
             },
             onValueChange = {},

@@ -3,14 +3,11 @@ package com.diffy.broke.core.di
 import android.content.Context
 import com.diffy.broke.core.AppPreferences
 import com.diffy.broke.data.Databases
-import com.diffy.broke.data.dao.AccountGroupDao
-import com.diffy.broke.data.dao.AccountHeadDao
+import com.diffy.broke.data.dao.CategoryDao
 import com.diffy.broke.data.dao.TransactionDao
-import com.diffy.broke.data.repository.AccountGroupRepoImpl
-import com.diffy.broke.data.repository.AccountHeadRepoImpl
+import com.diffy.broke.data.repository.CategoryRepoImpl
 import com.diffy.broke.data.repository.TransactionsRepoImpl
-import com.diffy.broke.domain.repository.AccountGroupRepo
-import com.diffy.broke.domain.repository.AccountHeadRepo
+import com.diffy.broke.domain.repository.CategoryRepo
 import com.diffy.broke.domain.repository.TransactionsRepo
 import dagger.Module
 import dagger.Provides
@@ -31,14 +28,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAccountHeadRepository(brokeDao: AccountHeadDao): AccountHeadRepo {
-        return AccountHeadRepoImpl(brokeDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAccountGroupRepository(brokeDao: AccountGroupDao): AccountGroupRepo {
-        return AccountGroupRepoImpl(brokeDao)
+    fun provideCategoryRepository(brokeDao: CategoryDao): CategoryRepo {
+        return CategoryRepoImpl(brokeDao)
     }
 
     @Provides

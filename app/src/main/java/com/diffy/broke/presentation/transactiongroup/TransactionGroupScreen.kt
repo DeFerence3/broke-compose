@@ -1,16 +1,13 @@
-package com.diffy.broke.presentation.accountgroup
+package com.diffy.broke.presentation.transactiongroup
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -26,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
 import com.diffy.broke.data.entity.Classification
-import com.diffy.broke.domain.model.AccountGroup
 import com.diffy.broke.presentation.core.search.SearchContract
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
@@ -39,10 +35,10 @@ import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountGroupScreen(
-    onEvent: (AccountGroupEvent) -> Unit,
-    state: AccountGroupState,
-    oneTimeEventChannelFlow: Flow<AccountGroupOneTimeEvent>,
+fun TransactionGroupScreen(
+    onEvent: (TransactionGroupAction) -> Unit,
+    state: TransactionGroupState,
+    oneTimeEventChannelFlow: Flow<TransactionGroupEvent>,
     drawerState: SlidingDrawerState,
     drawerClick: (SlidingDrawerState) -> Unit,
 ) {
@@ -52,17 +48,15 @@ fun AccountGroupScreen(
         contract = SearchContract(Classification::class),
         onResult = { item ->
             item?.let { newValue ->
-                val updatedAccountGroup = state.selectedAccountGroup?.copy(classification = newValue) ?: AccountGroup.new()
-                onEvent(AccountGroupEvent.SelectAccountGroup(updatedAccountGroup))
             }
         })
 
     oneTimeEventChannelFlow.ObserveEvent {
         when (it) {
-            is AccountGroupOneTimeEvent.Success -> {
+            is TransactionGroupEvent.Success -> {
                 Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
-            is AccountGroupOneTimeEvent.Error -> {
+            is TransactionGroupEvent.Error -> {
                 Toast.makeText(context, "Error: ${it.message}", Toast.LENGTH_LONG).show()
             }
         }
@@ -72,18 +66,16 @@ fun AccountGroupScreen(
     (state.selectedAccountGroup != null).OnShowDialog {
         BrokeDialog(
             title = if (state.selectedAccountGroup?.id == 0) "Add Account Group" else "Edit Account Group",
-            onNegativeAction = { onEvent(AccountGroupEvent.HideAddOrEditDialog) },
-            onPositiveAction = { onEvent(AccountGroupEvent.SaveAccountHead) },
+            onNegativeAction = { onEvent(TransactionGroupAction.HideAddOrEditDialog) },
+            onPositiveAction = { onEvent(TransactionGroupAction.SaveTransactionHead) },
             negativeText = "Cancel",
             positiveText = "Submit",
-            positiveButtonEnabled = !state.selectedAccountGroup?.accountGroupName.isNullOrBlank()
+            positiveButtonEnabled = !state.selectedAccountGroup?.name.isNullOrBlank()
         ) {
             OutlinedTextField(
-                value = state.selectedAccountGroup?.accountGroupName ?: "",
+                value = state.selectedAccountGroup?.name ?: "",
                 onValueChange = { newValue ->
-                    val updatedAccountGroup = state.selectedAccountGroup?.copy(accountGroupName = newValue)
-                        ?: AccountGroup.new()
-                    onEvent(AccountGroupEvent.SelectAccountGroup(updatedAccountGroup))
+
                 },
                 label = { Text("Account Group Name") },
                 modifier = Modifier.fillMaxWidth(),
@@ -91,7 +83,7 @@ fun AccountGroupScreen(
             )
 
             ClickableTextField(
-                value = state.selectedAccountGroup?.classification?.name ?: "",
+                value = state.selectedAccountGroup?.name ?: "",
                 onClick = { classification.launch(Unit)},
                 label = "Classification"
             )
@@ -116,7 +108,7 @@ fun AccountGroupScreen(
         },
         floatingActionButtonText = "Add",
         floatingActionButtonAction = {
-            onEvent(AccountGroupEvent.AddAccountGroup)
+            onEvent(TransactionGroupAction.AddTransactionGroup)
         }
     ) { padding ->
         Column( // Use Column to manage loading state
@@ -137,17 +129,14 @@ fun AccountGroupScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    items(state.accountGroups, key = { it.id }) { group ->
-                        AccountGroupItem(group = group) {
-                            onEvent(AccountGroupEvent.SelectAccountGroup(group))
-                        }
-                    }
+
                 }
             }
         }
     }
 }
 
+/*
 @Composable
 fun AccountGroupItem(group: AccountGroup, onClick: (AccountGroup) -> Unit) {
     androidx.compose.material3.Card(
@@ -173,4 +162,4 @@ fun AccountGroupItem(group: AccountGroup, onClick: (AccountGroup) -> Unit) {
             )
         }
     }
-}
+}*/

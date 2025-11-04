@@ -34,13 +34,13 @@ enum class NavigationDestinations (
         "account_head",
         Icons.Filled.Tag,
         Icons.Outlined.Tag,
-        Route.AccountHead
+        Route.Category(isSelect = false)
     ),
     ACCOUNT_GROUP(
         "account_group",
         Icons.Filled.Tag,
         Icons.Outlined.Tag,
-        Route.AccountGroup
+        Route.TransactionGroup
     ),
     SETTINGS(
         "settings",

@@ -4,7 +4,7 @@ package com.diffy.broke.data.repository
 
 import androidx.room.Transaction
 import com.diffy.broke.data.dao.TransactionDao
-import com.diffy.broke.data.relations.TransactionWithAccountHeads
+import com.diffy.broke.data.relations.TransactionWithCategory
 import com.diffy.broke.domain.repository.TransactionsRepo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -17,7 +17,7 @@ class TransactionsRepoImpl @Inject constructor(
     override fun getTransactionInDateRange(
         startTime: Instant,
         endTime: Instant
-    ): Flow<List<TransactionWithAccountHeads>> {
+    ): Flow<List<TransactionWithCategory>> {
         return transactionDao.getAllTransactionsOnDateRange(startTime,endTime)
     }
 
@@ -25,7 +25,7 @@ class TransactionsRepoImpl @Inject constructor(
         startTimeMillis: Instant,
         endTimeMillis: Instant,
         isExp: Int
-    ): Flow<List<TransactionWithAccountHeads>> {
+    ): Flow<List<TransactionWithCategory>> {
         return transactionDao.getAllTransactionsOnDateRange(startTimeMillis,endTimeMillis)
     }
 
@@ -35,7 +35,7 @@ class TransactionsRepoImpl @Inject constructor(
         return transid != 0L
     }
 
-    override fun getAllTransaction(): Flow<List<TransactionWithAccountHeads>> {
+    override fun getAllTransaction(): Flow<List<TransactionWithCategory>> {
         return transactionDao.getAllTransactions()
     }
 

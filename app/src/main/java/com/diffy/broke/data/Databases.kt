@@ -8,30 +8,30 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.diffy.broke.core.ioThread
 import com.diffy.broke.data.converter.InstantConverter
-import com.diffy.broke.data.dao.AccountGroupDao
-import com.diffy.broke.data.dao.AccountHeadDao
+import com.diffy.broke.data.dao.CategoryDao
 import com.diffy.broke.data.dao.ConfigDao
 import com.diffy.broke.data.dao.TransactionDao
-import com.diffy.broke.data.entity.AccountGroup
+import com.diffy.broke.data.dao.TransactionGroupDao
 import com.diffy.broke.data.entity.Transaction
+import com.diffy.broke.data.entity.TransactionGroup
 
 @Database(
     entities = [
-        AccountGroup::class,
-        com.diffy.broke.data.entity.AccountHead::class,
+        TransactionGroup::class,
+        com.diffy.broke.data.entity.Category::class,
         Transaction::class,
         com.diffy.broke.data.entity.Config::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(InstantConverter::class)
 abstract class Databases: RoomDatabase() {
 
     abstract val transactionDao: TransactionDao
 
-    abstract val accountHeadDao: AccountHeadDao
+    abstract val categoryDao: CategoryDao
 
-    abstract val accountGroupDao: AccountGroupDao
+    abstract val accountGroupDao: TransactionGroupDao
 
     abstract val configDao: ConfigDao
 
@@ -53,11 +53,11 @@ abstract class Databases: RoomDatabase() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         ioThread {
-                            INSTANCE?.accountGroupDao?.insertAll(defaultAccountGroups)
-                            INSTANCE?.accountHeadDao?.insertAll(defaultAccountHeads)
+                            INSTANCE?.categoryDao?.insertAll(defaultCategory)
                         }
                     }
                 })
+                .addMigrations(MIGRATION_1_2)
                 .build()
     }
 }

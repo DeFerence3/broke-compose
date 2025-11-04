@@ -2,6 +2,7 @@
 
 package com.diffy.broke.presentation.transaction
 
+import com.diffy.broke.domain.model.Category
 import com.diffy.broke.domain.model.Transaction
 import com.diffy.broke.presentation.core.enums.ViewType
 import kotlin.time.ExperimentalTime
@@ -11,7 +12,8 @@ sealed interface TransactionEvents {
     data object ShowAddEditDialog: TransactionEvents
     data object HideAddEditDialog: TransactionEvents
 
-    data class SearchAccountHeads(val name:String): TransactionEvents
+    data class SelectCategory(val category: Category): TransactionEvents
+    data class SearchCategorys(val name:String): TransactionEvents
     data class SetTransactionName(val packName: String): TransactionEvents
     data class SetAmount(val transAmount: String): TransactionEvents
     data class SetSelectedTransaction(val transaction: Transaction?): TransactionEvents

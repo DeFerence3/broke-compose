@@ -5,10 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.diffy.broke.data.entity.Classification
-import com.diffy.broke.domain.model.AccountGroup
-import com.diffy.broke.domain.model.AccountHead
-import com.diffy.broke.domain.use_case.accountgroup.SearchAccountGroupUsecase
-import com.diffy.broke.domain.use_case.accounthead.SearchAccountHeadUsecase
+import com.diffy.broke.domain.model.Category
+import com.diffy.broke.domain.use_case.category.SearchCategoryUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -30,8 +28,7 @@ import kotlin.reflect.KClass
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class SearchVM @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val searchAccountHeadUseCase: SearchAccountHeadUsecase,
-    private val searchAccountGroupUseCase: SearchAccountGroupUsecase,
+    private val searchCategoryUseCase: SearchCategoryUsecase,
 ) : ViewModel() {
     private val _state: MutableStateFlow<List<SearchResult>> = MutableStateFlow(emptyList())
     private val _searchQry = MutableStateFlow("")
@@ -94,17 +91,10 @@ class SearchVM @Inject constructor(
 
     private fun onSearch(query: String) {
         when(clazz){
-            AccountHead::class -> { searchAccountHead(query) }
-            AccountGroup::class -> { searchAccountGroup(query) }
+            Category::class -> { searchCategory(query) }
+            //AccountGroup::class -> { searchAccountGroup(query) }
             Classification::class -> { searchClassification(query) }
         }
-    }
-
-    private fun searchAccountGroup(query: String){
-        fetchAndMapData(
-            useCaseCall = { searchAccountGroupUseCase(query) },
-            mapResult = { SearchResult(it, it.accountGroupName) }
-        )
     }
 
     private fun searchClassification(query: String){
@@ -114,10 +104,10 @@ class SearchVM @Inject constructor(
         )
     }
 
-    private fun searchAccountHead(query: String){
+    private fun searchCategory(query: String){
         fetchAndMapData(
-            useCaseCall = { searchAccountHeadUseCase(query) },
-            mapResult = { SearchResult(it, it.accountHeadName) }
+            useCaseCall = { searchCategoryUseCase(query) },
+            mapResult = { SearchResult(it, it.categoryName) }
         )
     }
 

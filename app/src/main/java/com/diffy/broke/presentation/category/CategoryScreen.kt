@@ -1,11 +1,9 @@
-package com.diffy.broke.presentation.accounthead
+package com.diffy.broke.presentation.category
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,74 +29,57 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
-import com.diffy.broke.domain.model.AccountGroup
-import com.diffy.broke.domain.model.AccountHead
-import com.diffy.broke.presentation.core.search.SearchContract
+import com.diffy.broke.domain.model.Category
+import com.diffy.broke.presentation.core.LocalNavController
+import com.diffy.broke.presentation.core.search.navigateBackWithResult
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.ScaffoldTemplate
 import com.diffy.broke.presentation.core.ui.components.BrokeDialog
-import com.diffy.broke.presentation.core.ui.components.ClickableTextField
 import com.diffy.broke.presentation.core.ui.util.ObserveEvent
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountHeadScreen(
-    onEvent: (AccountHeadEvent) -> Unit,
-    state: AccountHeadState,
-    oneTimeEventChannelFlow: Flow<AccountHeadOneTimeEvent>,
+fun CategoryScreen(
+    onEvent: (CategoryAction) -> Unit,
+    state: CategoryState,
+    eventsChannel: Flow<CategoryEvent>,
     drawerClick: (SlidingDrawerState) -> Unit,
     drawerState: SlidingDrawerState,
+    isSelector: Boolean
 ) {
     val context = LocalContext.current
-    val accountGroupSelector =
-        rememberLauncherForActivityResult(
-            contract = SearchContract(AccountGroup::class),
-            onResult = { item ->
-                item.let {
-                    val updatedAccountHead = state.selectedAccountHead?.copy(accountGroup = it)
-                    if(updatedAccountHead != null) {
-                        onEvent(AccountHeadEvent.SelectAccountHead(updatedAccountHead))
-                    }
-                }
-            })
+    val navController = LocalNavController.current
 
-    oneTimeEventChannelFlow.ObserveEvent {
+    eventsChannel.ObserveEvent {
         when (it) {
-            is AccountHeadOneTimeEvent.Success -> {
+            is CategoryEvent.Success -> {
                 Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
-            is AccountHeadOneTimeEvent.Error -> {
+            is CategoryEvent.Error -> {
                 Toast.makeText(context, "Error: ${it.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    if (state.selectedAccountHead != null) {
+    if (state.selectedCategory != null) {
         BrokeDialog(
-            onNegativeAction = { onEvent(AccountHeadEvent.HideAddOrEditDialog) },
-            onPositiveAction = { onEvent(AccountHeadEvent.SaveAccountHead) },
-            positiveButtonEnabled = state.selectedAccountHead.accountHeadName.isNotBlank(),
-            title = if (state.selectedAccountHead.id == 0) "Add Account Head" else "Edit Account Head",
+            onNegativeAction = { onEvent(CategoryAction.HideAddOrEditDialog) },
+            onPositiveAction = { onEvent(CategoryAction.SaveCategory) },
+            positiveButtonEnabled = state.selectedCategory.categoryName.isNotBlank(),
+            title = if (state.selectedCategory.id == 0) "Add Category" else "Edit Category",
             positiveText = "Submit",
             negativeText = "Cancel"
         ) {
             OutlinedTextField(
-                value = state.selectedAccountHead.accountHeadName,
+                value = state.selectedCategory.categoryName,
                 onValueChange = { newValue ->
-                    val updatedAccountHead = state.selectedAccountHead.copy(accountHeadName = newValue)
-                    onEvent(AccountHeadEvent.SelectAccountHead(updatedAccountHead))
+                    val updatedCategory = state.selectedCategory.copy(categoryName = newValue)
+                    onEvent(CategoryAction.SelectCategory(updatedCategory))
                 },
-                label = { Text("Account Head Name") },
+                label = { Text("Category Name") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
-            )
-            ClickableTextField(
-                value = state.selectedAccountHead.accountGroup?.accountGroupName ?: "",
-                onClick = {
-                    accountGroupSelector.launch(Unit)
-                },
-                label = "Account Group",
             )
         }
     }
@@ -119,12 +100,14 @@ fun AccountHeadScreen(
                 }
             )
         },
-        floatingActionButtonText = "Add",
+        floatingActionButtonText = if (!isSelector) "Add" else null,
         floatingActionButtonAction = {
-            onEvent(AccountHeadEvent.AddAccountHead)
+            if (!isSelector){
+                onEvent(CategoryAction.AddCategory)
+            }
         }
     ) { padding ->
-        Column( // Use Column to manage loading state
+        Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize(),
@@ -133,18 +116,21 @@ fun AccountHeadScreen(
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator()
-                Text("Loading account Heads...")
-            } else if (state.accountHeads.isEmpty()) {
-                Text("No account Heads found. Tap 'Add' to create one.")
+                Text("Loading categories...")
+            } else if (state.categorys.isEmpty()) {
+                Text("No categories found. Tap 'Add' to create one.")
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(state.accountHeads, key = { it.id }) { head ->
-                        AccountHeadItem(head = head) {
-                            onEvent(AccountHeadEvent.SelectAccountHead(head))
+                    items(state.categorys, key = { it.id }) { head ->
+                        CategoryItem(head = head) {
+                            if (isSelector) {
+                                navController.navigateBackWithResult(head)
+                            }else {
+                                onEvent(CategoryAction.SelectCategory(head))
+                            }
                         }
                     }
                 }
@@ -154,7 +140,7 @@ fun AccountHeadScreen(
 }
 
 @Composable
-fun AccountHeadItem(head: AccountHead, onClick: (AccountHead) -> Unit) {
+fun CategoryItem(head: Category, onClick: (Category) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,11 +155,8 @@ fun AccountHeadItem(head: AccountHead, onClick: (AccountHead) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = head.accountHeadName,
+                text = head.categoryName,
                 style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = head.accountGroup?.classification?.name ?: ""
             )
         }
     }

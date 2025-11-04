@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.diffy.broke.Session
 import com.diffy.broke.core.BrokeResponse
 import com.diffy.broke.domain.model.Transaction
-import com.diffy.broke.domain.use_case.accounthead.SearchAccountHeadUsecase
+import com.diffy.broke.domain.use_case.category.SearchCategoryUsecase
 import com.diffy.broke.domain.use_case.transactions.CreateTransactionUseCase
 import com.diffy.broke.domain.use_case.transactions.DeleteTransactionUseCase
 import com.diffy.broke.domain.use_case.transactions.GetTransactionsUseCase
@@ -37,7 +37,7 @@ class TransactionVM @Inject constructor(
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val createTransactionUseCase: CreateTransactionUseCase,
-    private val searchAccountHeadUsecase: SearchAccountHeadUsecase,
+    private val searchCategoryUsecase: SearchCategoryUsecase,
     private val session: Session
 ): ViewModel() {
 
@@ -92,20 +92,23 @@ class TransactionVM @Inject constructor(
                 }
             }
             is TransactionEvents.CreateTransaction -> {
-                val transactionWithTags = validateTransaction(event.transaction)
-                if (transactionWithTags != null){
-                    viewModelScope.launch {
-                        createTransactionUseCase.invoke(transactionWithTags).collect{
-                            Log.i("Broke", "CreateTrans---> $it")
+                val transaction = state.value.selectedTransaction
+                if (transaction != null){
+                    val validatedTransaction = validateTransaction(transaction)
+                    if (validatedTransaction != null){
+                        viewModelScope.launch {
+                            createTransactionUseCase.invoke(validatedTransaction).collect{
+                                Log.i("Broke", "CreateTrans---> $it")
+                            }
                         }
+                        onEvent(HideAddEditDialog)
+                        onEvent(SetSelectedTransaction(null))
+                    } else {
+                        return
                     }
-                    onEvent(HideAddEditDialog)
-                    onEvent(SetSelectedTransaction(null))
-                } else {
-                    return
                 }
             }
-            is HideAddEditDialog -> updateState { it.copy(isAddEditDialogShowing = false) }
+            is HideAddEditDialog -> updateState { it.copy(selectedTransaction = null) }
             is TransactionEvents.SetTransactionName -> {
 //                _state.update { it.copy(
 //                    transactionName = event.packName
@@ -135,17 +138,18 @@ class TransactionVM @Inject constructor(
             }
 
             is SetSelectedTransaction -> updateState { it.copy(selectedTransaction = event.transaction) }
-            is TransactionEvents.SearchAccountHeads -> {
+            is TransactionEvents.SearchCategorys -> {
                 viewModelScope.launch {
-                    searchAccountHeadUsecase.invoke(event.name).collectLatest {
+                    searchCategoryUsecase.invoke(event.name).collectLatest {
                         updateState { transactionStates ->
-                            transactionStates.copy(accountHeads = it)
+                            transactionStates.copy(categorys = it)
                         }
                     }
                 }
             }
 
             is TransactionEvents.SetViewType -> updateState { it.copy(viewType = event.viewType) }.also { getTransactions() }
+            is TransactionEvents.SelectCategory -> updateState { it.copy(selectedTransaction = it.selectedTransaction?.copy(category = event.category)) }
         }
     }
 
@@ -159,41 +163,6 @@ class TransactionVM @Inject constructor(
         }
     }
 
-/*
-    private fun setTransactions(
-        start: Long,
-        end: Long,
-        transactionsOrderBy: OrderBy,
-        sortView: SortView
-    ) {
-        viewModelScope.launch {
-            getTransactionsUseCase.invoke(start,end,transactionsOrderBy,sortView).collectLatest{ response ->
-                when(response) {
-                    is BrokeResponse.Empty -> updateState { it.copy(
-                        transactionMsg = response.message,
-                        loadingState = false
-                    ) }
-                    is BrokeResponse.Error -> updateState { it.copy(
-                        transactionMsg = response.message,
-                        loadingState = false
-                    ) }
-                    is BrokeResponse.Loading -> updateState { it.copy(
-                        transactionMsg = response.message,
-                        loadingState = true
-                    ) }
-                    is BrokeResponse.NetworkError -> updateState { it.copy(
-                        transactionMsg = response.message,
-                        loadingState = false
-                    ) }
-                    is BrokeResponse.Success -> updateState { it.copy(
-                        transactions = response.data,
-                        loadingState = false
-                    ) }
-                }
-            }
-        }
-    }
-*/
     private inline fun updateState(update: (TransactionStates) -> TransactionStates) {
         _state.value = update(_state.value)
     }

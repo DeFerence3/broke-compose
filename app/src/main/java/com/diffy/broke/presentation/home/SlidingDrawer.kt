@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.diffy.broke.presentation.core.LocalSlidingDrawerNavController
+import com.diffy.broke.presentation.core.LocalNavController
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawer
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.ui.navigation.NavigationDestinations
@@ -32,7 +32,7 @@ import com.diffy.broke.presentation.core.ui.navigation.SlidingDrawerContentHost
 
 @Composable
 fun SlidingDrawer() {
-    val navHostController = LocalSlidingDrawerNavController.current
+    val navHostController = LocalNavController.current
     val configuration = LocalWindowInfo.current
     val density = LocalDensity.current.density
     val currentRouteName = navHostController.currentBackStackEntryAsState().value?.destination?.route

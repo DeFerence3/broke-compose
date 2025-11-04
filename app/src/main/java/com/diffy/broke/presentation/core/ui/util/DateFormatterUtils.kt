@@ -166,7 +166,7 @@ fun splitDateRange(startDateMillis: Long, endDateMillis: Long): List<SplittedDay
 }
 
 /*fun monthAndDateFormatter(month: Int, year: Int): String {
-    return Month.of(month+1).name + " - "+ year
+    return Month.of(month+1).categoryName + " - "+ year
 }*/
 fun dateRangeFormatter(startDate: Long, endDate: Long): String {
     return dateInMillisToFormat(startDate) + " - " + dateInMillisToFormat(endDate)

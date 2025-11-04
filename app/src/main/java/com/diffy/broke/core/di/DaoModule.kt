@@ -2,8 +2,7 @@ package com.diffy.broke.core.di
 
 import android.content.Context
 import com.diffy.broke.data.Databases
-import com.diffy.broke.data.dao.AccountGroupDao
-import com.diffy.broke.data.dao.AccountHeadDao
+import com.diffy.broke.data.dao.CategoryDao
 import com.diffy.broke.data.dao.TransactionDao
 import dagger.Module
 import dagger.Provides
@@ -24,14 +23,8 @@ object DaoModule {
 
     @Provides
     @Singleton
-    fun provideAccountHeadDao(@ApplicationContext appContext: Context): AccountHeadDao {
-        return Databases.Companion.getInstance(appContext).accountHeadDao
-    }
-
-    @Provides
-    @Singleton
-    fun provideAccountGroupDao(@ApplicationContext appContext: Context): AccountGroupDao {
-        return Databases.Companion.getInstance(appContext).accountGroupDao
+    fun provideCategoryDao(@ApplicationContext appContext: Context): CategoryDao {
+        return Databases.Companion.getInstance(appContext).categoryDao
     }
 
 }

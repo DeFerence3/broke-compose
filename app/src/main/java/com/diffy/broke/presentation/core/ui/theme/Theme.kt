@@ -14,8 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.diffy.broke.presentation.core.LocalDeveloperMode
-import com.diffy.broke.presentation.core.LocalMainNavController
-import com.diffy.broke.presentation.core.LocalSlidingDrawerNavController
+import com.diffy.broke.presentation.core.LocalNavController
 import com.diffy.broke.presentation.core.LocalSlidingDrawerState
 import com.diffy.broke.presentation.core.LocalThemePreference
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
@@ -71,8 +70,7 @@ fun BrokeTheme(
 fun SettingsProvider(content: @Composable () -> Unit) {
     SettingsSaver.AppSettingsStateFlow.collectAsState().value.run {
         CompositionLocalProvider(
-            LocalSlidingDrawerNavController provides rememberNavController(),
-            LocalMainNavController provides rememberNavController(),
+            LocalNavController provides rememberNavController(),
             LocalDeveloperMode provides isDeveloperMode,
             LocalThemePreference provides themePreference,
             LocalSlidingDrawerState provides remember { SlidingDrawerState.Closed }

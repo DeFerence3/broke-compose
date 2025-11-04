@@ -25,10 +25,10 @@ open class Route(val title: String) {
     data object Home: Route("Home")
 
     @Serializable
-    data object AccountHead: Route("AccountHead")
+    data class Category(val isSelect: Boolean): Route("Category")
 
     @Serializable
-    data object AccountGroup: Route("AccountGroup")
+    data object TransactionGroup: Route("AccountGroup")
 
     @Serializable
     data object Main: Route("Main")
