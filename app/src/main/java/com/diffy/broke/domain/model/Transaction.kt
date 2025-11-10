@@ -13,7 +13,8 @@ data class Transaction(
     val amount: String,
     val day: Long,
     val category: Category,
-    val mode: String = "View"
+    val isIncome: Boolean,
+    val mode: TransactionFormModes = TransactionFormModes.ADD
 ) {
     fun toEntity(): TransactionEntity {
         return TransactionEntity(
@@ -22,7 +23,8 @@ data class Transaction(
             amount = amount.toFloatOrNull() ?: 0F,
             date = Instant.fromEpochMilliseconds(day),
             categoryId = category.id,
-            transactionGroupId = null
+            transactionGroupId = null,
+            isIncome = isIncome
         )
     }
 
@@ -33,7 +35,8 @@ data class Transaction(
                 notes = entity.transaction.notes,
                 amount = entity.transaction.amount.toString(),
                 day = entity.transaction.date.toEpochMilliseconds(),
-                category = Category.fromEntity(entity.category)
+                category = Category.fromEntity(entity.category),
+                isIncome = entity.transaction.isIncome
             )
         }
 
@@ -43,7 +46,8 @@ data class Transaction(
             amount = "",
             day = System.currentTimeMillis(),
             category = Category.new(),
-            mode = "Edit",
+            mode = TransactionFormModes.ADD,
+            isIncome = false
         )
     }
 }

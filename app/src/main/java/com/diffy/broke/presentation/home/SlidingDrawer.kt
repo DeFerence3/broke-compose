@@ -15,6 +15,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,9 +37,8 @@ fun SlidingDrawer() {
     val configuration = LocalWindowInfo.current
     val density = LocalDensity.current.density
     val currentRouteName = navHostController.currentBackStackEntryAsState().value?.destination?.route
-    val selectedNavigationItem = remember(currentRouteName) {
-        NavigationDestinations.entries.find { it.route::class.qualifiedName == currentRouteName }
-            ?: NavigationDestinations.TRANSACTIONS
+    var selectedNavigationItem by rememberSaveable{
+        mutableStateOf(NavigationDestinations.TRANSACTIONS)
     }
     var drawerState by remember { mutableStateOf(SlidingDrawerState.Closed) }
     val screenWidthDp = configuration.containerSize.width.dp
@@ -50,7 +50,7 @@ fun SlidingDrawer() {
     )
 
     val animateEdges by animateDpAsState(
-        targetValue = if (drawerState.isOpened()) 18.dp else 0.dp,
+        targetValue = if (drawerState.isOpened()) 22.dp else 0.dp,
         label = "Animated Edges"
     )
     val animatedScale by animateFloatAsState(
@@ -71,6 +71,7 @@ fun SlidingDrawer() {
             selectedNavigationItem = selectedNavigationItem,
             onNavigationItemClick = {
                 drawerState = SlidingDrawerState.Closed
+                //selectedNavigationItem = it
                 navHostController.navigate(it.route) {
                     popUpTo(navHostController.graph.startDestinationId)
                     launchSingleTop = true
@@ -83,7 +84,7 @@ fun SlidingDrawer() {
 
         SlidingDrawerContentHost(
             modifier = Modifier
-                .offset{
+                .offset {
                     IntOffset(animatedOffset.roundToPx(), 0)
                 }
                 .scale(scale = animatedScale)

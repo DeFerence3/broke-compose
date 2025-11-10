@@ -12,6 +12,8 @@ import com.diffy.broke.data.dao.CategoryDao
 import com.diffy.broke.data.dao.ConfigDao
 import com.diffy.broke.data.dao.TransactionDao
 import com.diffy.broke.data.dao.TransactionGroupDao
+import com.diffy.broke.data.entity.CategoryBudget
+import com.diffy.broke.data.entity.MonthlyBudget
 import com.diffy.broke.data.entity.Transaction
 import com.diffy.broke.data.entity.TransactionGroup
 
@@ -20,9 +22,11 @@ import com.diffy.broke.data.entity.TransactionGroup
         TransactionGroup::class,
         com.diffy.broke.data.entity.Category::class,
         Transaction::class,
-        com.diffy.broke.data.entity.Config::class
+        com.diffy.broke.data.entity.Config::class,
+        MonthlyBudget::class,
+        CategoryBudget::class
     ],
-    version = 2
+    version = 4
 )
 @TypeConverters(InstantConverter::class)
 abstract class Databases: RoomDatabase() {
@@ -31,7 +35,7 @@ abstract class Databases: RoomDatabase() {
 
     abstract val categoryDao: CategoryDao
 
-    abstract val accountGroupDao: TransactionGroupDao
+    abstract val transactionGroupDao: TransactionGroupDao
 
     abstract val configDao: ConfigDao
 
@@ -58,6 +62,8 @@ abstract class Databases: RoomDatabase() {
                     }
                 })
                 .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_2_3)
+                .addMigrations(MIGRATION_3_4)
                 .build()
     }
 }

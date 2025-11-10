@@ -35,9 +35,11 @@ data class Transaction @OptIn(ExperimentalTime::class) constructor(
     val date: Instant,
     @ColumnInfo(name = "category_id")
     val categoryId: Int,
+    @ColumnInfo(name = "is_income")
+    val isIncome: Boolean,
     @ColumnInfo(name = "transaction_group_id")
     val transactionGroupId: Int?,
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id: Int = 0, 
+    val id: Int = 0,
 )

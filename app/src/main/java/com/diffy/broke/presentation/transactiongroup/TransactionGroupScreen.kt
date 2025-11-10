@@ -1,7 +1,6 @@
 package com.diffy.broke.presentation.transactiongroup
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,8 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
-import com.diffy.broke.data.entity.Classification
-import com.diffy.broke.presentation.core.search.SearchContract
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
 import com.diffy.broke.presentation.core.templates.ScaffoldTemplate
@@ -44,12 +41,6 @@ fun TransactionGroupScreen(
 ) {
     val context = LocalContext.current
 
-    val classification = rememberLauncherForActivityResult(
-        contract = SearchContract(Classification::class),
-        onResult = { item ->
-            item?.let { newValue ->
-            }
-        })
 
     oneTimeEventChannelFlow.ObserveEvent {
         when (it) {
@@ -63,28 +54,28 @@ fun TransactionGroupScreen(
     }
 
     // Dialog for adding or editing an account group
-    (state.selectedAccountGroup != null).OnShowDialog {
+    state.selectedTransactionGroup.OnShowDialog {
         BrokeDialog(
-            title = if (state.selectedAccountGroup?.id == 0) "Add Account Group" else "Edit Account Group",
-            onNegativeAction = { onEvent(TransactionGroupAction.HideAddOrEditDialog) },
+            title = if (state.selectedTransactionGroup?.id == 0) "Add Transaction Group" else "Edit Transaction Group",
+            onNegativeAction = { onEvent(TransactionGroupAction.AddTransactionGroup) },
             onPositiveAction = { onEvent(TransactionGroupAction.SaveTransactionHead) },
             negativeText = "Cancel",
             positiveText = "Submit",
-            positiveButtonEnabled = !state.selectedAccountGroup?.name.isNullOrBlank()
+            positiveButtonEnabled = !state.selectedTransactionGroup?.name.isNullOrBlank()
         ) {
             OutlinedTextField(
-                value = state.selectedAccountGroup?.name ?: "",
+                value = state.selectedTransactionGroup?.name ?: "",
                 onValueChange = { newValue ->
 
                 },
-                label = { Text("Account Group Name") },
+                label = { Text("Transaction Group Name") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             ClickableTextField(
-                value = state.selectedAccountGroup?.name ?: "",
-                onClick = { classification.launch(Unit)},
+                value = state.selectedTransactionGroup?.name ?: "",
+                onClick = { },
                 label = "Classification"
             )
 
@@ -94,7 +85,7 @@ fun TransactionGroupScreen(
     ScaffoldTemplate(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.account_group)) },
+                title = { Text(stringResource(R.string.transaction_group)) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -121,7 +112,7 @@ fun TransactionGroupScreen(
             if (state.isLoading) {
                 androidx.compose.material3.CircularProgressIndicator()
                 Text("Loading account groups...")
-            } else if (state.accountGroups.isEmpty()) {
+            } else if (state.transactionGroups.isEmpty()) {
                 Text("No account groups found. Tap 'Add' to create one.")
             } else {
                 LazyColumn(
@@ -138,7 +129,7 @@ fun TransactionGroupScreen(
 
 /*
 @Composable
-fun AccountGroupItem(group: AccountGroup, onClick: (AccountGroup) -> Unit) {
+fun TransactionGroupItem(group: TransactionGroup, onClick: (TransactionGroup) -> Unit) {
     androidx.compose.material3.Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,7 +144,7 @@ fun AccountGroupItem(group: AccountGroup, onClick: (AccountGroup) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = group.accountGroupName,
+                text = group.transactionGroupName,
                 style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
             )

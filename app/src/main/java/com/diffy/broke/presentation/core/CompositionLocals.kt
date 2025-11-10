@@ -7,7 +7,9 @@ import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.ui.theme.ThemePreference
 
 val LocalDeveloperMode = staticCompositionLocalOf { false }
-val LocalThemePreference = compositionLocalOf { ThemePreference() }
+val LocalThemePreference = compositionLocalOf<ThemePreference>{
+    error("ThemePreference not initialized!")
+}
 val LocalNavController = compositionLocalOf<NavHostController> {
     error("LocalNavController not initialized!")
 }

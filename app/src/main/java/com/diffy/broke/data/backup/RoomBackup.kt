@@ -13,8 +13,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.room.RoomDatabase
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.diffy.broke.data.backup.RoomBackup.Companion.BACKUP_FILE_LOCATION_CUSTOM_DIALOG
 import com.diffy.broke.data.backup.RoomBackup.Companion.BACKUP_FILE_LOCATION_CUSTOM_FILE
 import com.diffy.broke.data.backup.RoomBackup.Companion.BACKUP_FILE_LOCATION_EXTERNAL
@@ -260,12 +258,6 @@ class RoomBackup(var context: Context) {
             return false
         }
 
-        // Create or retrieve the Master Key for encryption/decryption
-        val masterKeyAlias =
-            MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-
-        val keyGen = javax.crypto.KeyGenerator.getInstance("AES").generateKey()
-
         if (backupLocation !in
             listOf(
                 BACKUP_FILE_LOCATION_INTERNAL,
@@ -293,22 +285,12 @@ class RoomBackup(var context: Context) {
             onCompleteListener?.onComplete(
                 false,
                 "backupLocation is set to custom backup file, but no file is defined",
-                OnCompleteListener.Companion.EXIT_CODE_ERROR_BACKUP_LOCATION_FILE_MISSING
+                OnCompleteListener.EXIT_CODE_ERROR_BACKUP_LOCATION_FILE_MISSING
             )
             return false
         }
 
-        // Initialize/open an instance of EncryptedSharedPreferences
-        // Encryption key is stored in plain text in an EncryptedSharedPreferences --> it is saved
-        // encrypted
-        sharedPreferences =
-            EncryptedSharedPreferences.create(
-                context,
-                SHARED_PREFS,
-                masterKeyAlias,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+        sharedPreferences = context.getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE)
 
         dbName = roomDatabase!!.openHelper.databaseName!!
         INTERNAL_BACKUP_PATH = File("${context.filesDir}/databasebackup/")

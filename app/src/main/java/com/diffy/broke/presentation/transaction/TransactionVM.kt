@@ -89,6 +89,7 @@ class TransactionVM @Inject constructor(
             is TransactionEvents.DeleteTransaction -> {
                 viewModelScope.launch {
                     deleteTransactionUseCase(event.transaction)
+                    updateState { it.copy(selectedTransaction = null) }
                 }
             }
             is TransactionEvents.CreateTransaction -> {

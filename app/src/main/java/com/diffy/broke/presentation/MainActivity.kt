@@ -4,25 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.diffy.broke.core.AppPreferences
-import com.diffy.broke.data.Databases
 import com.diffy.broke.data.backup.RoomBackup
 import com.diffy.broke.data.repository.setActivityContextProvider
 import com.diffy.broke.presentation.core.LocalThemePreference
 import com.diffy.broke.presentation.core.ui.theme.BrokeTheme
 import com.diffy.broke.presentation.core.ui.theme.SettingsProvider
+import com.diffy.broke.presentation.core.ui.theme.conf.ThemeType
 import com.diffy.broke.presentation.home.SlidingDrawer
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var db: Databases
-
-    @Inject
-    lateinit var preferences: AppPreferences
 
     private val roomBackup = RoomBackup(this)
 
@@ -32,9 +24,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SettingsProvider {
+                val themePreferences = LocalThemePreference.current
                 BrokeTheme(
-                    darkTheme = LocalThemePreference.current.isDarkTheme,
-                    dynamicColor = true
+                    darkTheme = themePreferences.isDarkTheme,
+                    dynamicColor = themePreferences.themeType == ThemeType.System
                 ) {
                     SlidingDrawer()
                 }

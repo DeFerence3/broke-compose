@@ -10,7 +10,7 @@ import com.diffy.broke.presentation.core.ui.theme.conf.ThemeType
 data class ThemePreference(
     val darkMode: DarkTheme = DarkTheme.System,
     val isHighContrastModeEnabled: Boolean = false,
-    val themeType: ThemeType = ThemeType.Default
+    val themeType: ThemeType = ThemeType.System
 ) {
 
     val isDarkTheme: Boolean

@@ -33,6 +33,7 @@ import com.diffy.broke.presentation.transaction.TransactionStates
 
 @Composable
 fun MainAppbarExtraContent(
+    modifier: Modifier = Modifier,
     transactionStates: TransactionStates,
     onEvent: (TransactionEvents) -> Unit
 ) {
@@ -68,7 +69,7 @@ fun MainAppbarExtraContent(
         )
     }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

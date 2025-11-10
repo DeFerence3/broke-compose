@@ -40,7 +40,7 @@ fun TransactionCard(
     transaction: Transaction,
     onClick: (() -> Unit)?,
     onLongClick: () -> Unit,
-    composable: @Composable (DpOffset, Dp) -> Unit?
+    composable: @Composable (DpOffset, Dp, Dp) -> Unit?
 ) {
     val date = remember(transaction.day) {
         SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(Date(transaction.day))
@@ -48,6 +48,7 @@ fun TransactionCard(
     var pressOffset by remember { mutableStateOf(DpOffset.Zero) }
     val density = LocalDensity.current
     var itemHeight by remember { mutableStateOf(0.dp) }
+    var itemWidth by remember { mutableStateOf(0.dp) }
     val interactionSource = remember {
         MutableInteractionSource()
     }
@@ -57,6 +58,7 @@ fun TransactionCard(
             .fillMaxWidth()
             .onSizeChanged {
                 itemHeight = with(density) { it.height.toDp() }
+                itemWidth = with(density) { it.width.toDp() }
             }
             .clickable(onClick != null) { onClick?.invoke() }
             .pointerInput(true) {
@@ -109,17 +111,19 @@ fun TransactionCard(
                 )
             }
 
-            // Right: Amount
+            val txtColor = if (transaction.isIncome)
+                MaterialTheme.colorScheme.primary
+            else
+                MaterialTheme.colorScheme.primary
             Text(
+                modifier = Modifier
+                    .padding(4.dp),
                 text = "₹${transaction.amount}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = if (transaction.amount.startsWith("-"))
-                    MaterialTheme.colorScheme.error
-                else
-                    MaterialTheme.colorScheme.primary
+                color = txtColor
             )
         }
-        composable(pressOffset,itemHeight)
+        composable(pressOffset,itemHeight,itemWidth)
     }
 }

@@ -28,7 +28,7 @@ open class Route(val title: String) {
     data class Category(val isSelect: Boolean): Route("Category")
 
     @Serializable
-    data object TransactionGroup: Route("AccountGroup")
+    data object TransactionGroup: Route("TransactionGroup")
 
     @Serializable
     data object Main: Route("Main")

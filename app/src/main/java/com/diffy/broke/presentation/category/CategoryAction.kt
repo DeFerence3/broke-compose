@@ -8,5 +8,5 @@ sealed interface CategoryAction {
     data object AddCategory: CategoryAction
     data object SaveCategory : CategoryAction
     data class SelectCategory(val category: Category): CategoryAction
-    data class SearchAccountGroup(val query: String): CategoryAction
+    data class SearchTransactionGroup(val query: String): CategoryAction
 }

@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTime::class)
-
 package com.diffy.broke.presentation.transaction.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -15,10 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.CurrencyRupee
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.Loop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -40,14 +41,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.diffy.broke.R
-import com.diffy.broke.domain.model.Category
 import com.diffy.broke.domain.model.Transaction
+import com.diffy.broke.domain.model.TransactionFormModes
 import com.diffy.broke.presentation.core.templates.OnShowDialog
 import com.diffy.broke.presentation.core.ui.components.ClickableTextField
 import com.diffy.broke.presentation.core.ui.util.dateInMillisToFormat
 import com.diffy.broke.presentation.core.ui.util.datePickerScreen
 import com.diffy.broke.presentation.transaction.TransactionEvents
-import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -57,14 +57,16 @@ fun AddEditDialog(
     onSelectClick: () -> Unit,
     selectedTransaction: Transaction
 ) {
-    var showDatetimepicker by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableLongStateOf(selectedTransaction.day) }
-    val datePickerState = rememberDatePickerState( initialSelectedDateMillis = selectedDate )
-    var amount by remember { mutableStateOf(selectedTransaction.amount ?: "") }
-    var transactionTitle by remember { mutableStateOf(selectedTransaction.notes) }
+    var amount by remember { mutableStateOf(selectedTransaction.amount) }
+    var notes by remember { mutableStateOf(selectedTransaction.notes) }
     var category by remember { mutableStateOf(selectedTransaction.category) }
+    var isIncome by remember { mutableStateOf(selectedTransaction.isIncome) }
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val formFocusRequesters = List(4) { FocusRequester() }
+    var showDatetimepicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState( initialSelectedDateMillis = selectedDate )
 
     showDatetimepicker.OnShowDialog{
         selectedDate = datePickerScreen(
@@ -84,7 +86,7 @@ fun AddEditDialog(
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false
         ),
-        title = { Text(text = if (selectedTransaction.mode == "Edit") stringResource(R.string.edit_transaction) else stringResource(R.string.add_transaction)) },
+        title = { Text(text = if (selectedTransaction.mode == TransactionFormModes.EDIT) stringResource(R.string.edit_transaction) else stringResource(R.string.add_transaction)) },
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
@@ -104,6 +106,24 @@ fun AddEditDialog(
                                 contentDescription = "Date",
                             )
                         },
+                    )
+                    FilterChip(
+                        selected = false,
+                        onClick = {
+                            isIncome = !isIncome
+                        },
+                        label = { Text(text = if (isIncome) "Income" else "Expense") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Loop,
+                                contentDescription = "Toggle Income Expense",
+                            )
+                        },
+                        border = FilterChipDefaults.filterChipBorder(
+                            borderColor = if (isIncome) Color.Green else Color.Red,
+                            enabled = true,
+                            selected = false
+                        )
                     )
                 }
                 ClickableTextField(
@@ -172,18 +192,18 @@ fun AddEditDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val transaction = castToTransaction(
+                    val transaction = Transaction(
                         id = selectedTransaction.id,
-                        title = transactionTitle,
                         amount = amount,
                         day = selectedDate,
-                        fromAccount = category,
-                        toAccount = category
+                        isIncome = isIncome,
+                        notes = notes,
+                        category = category,
                     )
                     onEvent(TransactionEvents.CreateTransaction(transaction))
                 }
             ) {
-                Text(text = if (selectedTransaction.mode == "View") stringResource(R.string.add) else stringResource(R.string.edit))
+                Text(text = if (selectedTransaction.mode == TransactionFormModes.ADD) stringResource(R.string.add) else stringResource(R.string.edit))
             }
         },
         dismissButton = {
@@ -197,18 +217,3 @@ fun AddEditDialog(
         }
     )
 }
-
-fun castToTransaction(
-    id: Int,
-    title: String,
-    amount: String,
-    day: Long,
-    fromAccount: Category,
-    toAccount: Category
-): Transaction = Transaction(
-    id = id,
-    notes = title,
-    amount = amount,
-    day = day,
-    category = fromAccount
-)

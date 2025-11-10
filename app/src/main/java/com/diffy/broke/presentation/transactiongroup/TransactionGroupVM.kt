@@ -1,6 +1,9 @@
 package com.diffy.broke.presentation.transactiongroup
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.diffy.broke.data.entity.TransactionGroup
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -8,11 +11,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@dagger.hilt.android.lifecycle.HiltViewModel
-class TransactionGroupVM @javax.inject.Inject constructor(
+@HiltViewModel
+class TransactionGroupVM @Inject constructor(
 
-) : androidx.lifecycle.ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(TransactionGroupState())
     val state: StateFlow<TransactionGroupState> = _state.asStateFlow()
@@ -28,7 +32,14 @@ class TransactionGroupVM @javax.inject.Inject constructor(
     }
 
     fun onEvent(event: TransactionGroupAction) {
-
+        when(event){
+            TransactionGroupAction.AddTransactionGroup -> {updateState { it.copy(selectedTransactionGroup = TransactionGroup(
+                id = 0,
+                name = "",
+                description = null
+            )) }}
+            TransactionGroupAction.SaveTransactionHead -> TODO()
+        }
     }
 
     private inline fun updateState(update: (TransactionGroupState) -> TransactionGroupState) = _state.update { update(_state.value) }

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.diffy.broke.data.entity.Classification
 import com.diffy.broke.domain.model.Category
 import com.diffy.broke.domain.use_case.category.SearchCategoryUsecase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -92,17 +90,11 @@ class SearchVM @Inject constructor(
     private fun onSearch(query: String) {
         when(clazz){
             Category::class -> { searchCategory(query) }
-            //AccountGroup::class -> { searchAccountGroup(query) }
-            Classification::class -> { searchClassification(query) }
+            //TransactionGroup::class -> { searchTransactionGroup(query) }
+            //Classification::class -> { searchClassification(query) }
         }
     }
 
-    private fun searchClassification(query: String){
-        fetchAndMapData(
-            useCaseCall = { flow { emit(Classification.entries.map { it }.filter { it.name.contains(query,true) }) } },
-            mapResult = { SearchResult(it, it.name) }
-        )
-    }
 
     private fun searchCategory(query: String){
         fetchAndMapData(

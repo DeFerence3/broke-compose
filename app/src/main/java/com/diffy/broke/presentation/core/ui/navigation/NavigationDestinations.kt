@@ -13,37 +13,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.diffy.broke.presentation.core.ui.Route
 
 enum class NavigationDestinations (
-    val key: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
     val route: Route
 ) {
     TRANSACTIONS(
-        "transactions",
         Icons.Filled.Money,
         Icons.Outlined.Money,
         Route.Transaction
     ),
     SUMMARY(
-        "summary",
         Icons.Filled.Summarize,
         Icons.Outlined.Summarize,
         Route.Summary
     ),
-    ACCOUNT_HEAD(
-        "account_head",
+    CATEGORY(
         Icons.Filled.Tag,
         Icons.Outlined.Tag,
         Route.Category(isSelect = false)
     ),
-    ACCOUNT_GROUP(
-        "account_group",
+    TRANSACTION_GROUP(
         Icons.Filled.Tag,
         Icons.Outlined.Tag,
         Route.TransactionGroup
     ),
     SETTINGS(
-        "settings",
         Icons.Filled.Settings,
         Icons.Outlined.Settings,
         Route.Settings

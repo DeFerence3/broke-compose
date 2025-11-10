@@ -35,16 +35,16 @@ class CategoryVM @javax.inject.Inject constructor(
             CategoryAction.HideAddOrEditDialog -> updateState { it.copy(selectedCategory = null) }
             is CategoryAction.SelectCategory -> updateState { it.copy(selectedCategory = event.category) }
             CategoryAction.SaveCategory -> {
-                val currentSelectedAccountGroup = state.value.selectedCategory
-                if (!currentSelectedAccountGroup?.categoryName.isNullOrBlank())
+                val currentSelectedTransactionGroup = state.value.selectedCategory
+                if (!currentSelectedTransactionGroup?.categoryName.isNullOrBlank())
                 viewModelScope.launch {
-                    upsertCategoryUsecase(category = currentSelectedAccountGroup).collectLatest {
+                    upsertCategoryUsecase(category = currentSelectedTransactionGroup).collectLatest {
                         updateState { it.copy(selectedCategory = null) }
                     }
                 }
             }
 
-            is CategoryAction.SearchAccountGroup -> {
+            is CategoryAction.SearchTransactionGroup -> {
 
             }
         }
