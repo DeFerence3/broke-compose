@@ -43,7 +43,7 @@ import com.diffy.broke.domain.model.Transaction
 import com.diffy.broke.domain.model.TransactionFormModes
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
-import com.diffy.broke.presentation.core.ui.components.MainAppbarExtraContent
+import com.diffy.broke.presentation.core.components.MainAppbarExtraContent
 import com.diffy.broke.presentation.transaction.components.AddEditDialog
 import com.diffy.broke.presentation.transaction.components.TransactionCard
 import kotlin.time.ExperimentalTime

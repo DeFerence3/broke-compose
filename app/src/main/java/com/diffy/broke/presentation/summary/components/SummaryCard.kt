@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import com.diffy.broke.presentation.core.ui.theme.BrokeTheme
+import com.diffy.broke.presentation.core.theme.BrokeTheme
 
 @Composable
 fun SummaryCard(

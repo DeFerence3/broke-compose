@@ -44,9 +44,9 @@ import com.diffy.broke.R
 import com.diffy.broke.domain.model.Transaction
 import com.diffy.broke.domain.model.TransactionFormModes
 import com.diffy.broke.presentation.core.templates.OnShowDialog
-import com.diffy.broke.presentation.core.ui.components.ClickableTextField
-import com.diffy.broke.presentation.core.ui.util.dateInMillisToFormat
-import com.diffy.broke.presentation.core.ui.util.datePickerScreen
+import com.diffy.broke.presentation.core.components.ClickableTextField
+import com.diffy.broke.presentation.core.util.dateInMillisToFormat
+import com.diffy.broke.presentation.core.util.datePickerScreen
 import com.diffy.broke.presentation.transaction.TransactionEvents
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)

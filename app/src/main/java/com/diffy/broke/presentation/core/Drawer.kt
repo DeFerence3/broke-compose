@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawer
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
-import com.diffy.broke.presentation.core.ui.navigation.NavigationDestinations
-import com.diffy.broke.presentation.core.ui.navigation.SlidingDrawerContentHost
+import com.diffy.broke.presentation.core.navigation.NavigationDestinations
+import com.diffy.broke.presentation.core.navigation.SlidingDrawerContentHost
 
 @Composable
 fun SlidingDrawer() {

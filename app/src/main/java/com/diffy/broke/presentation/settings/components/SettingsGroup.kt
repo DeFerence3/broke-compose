@@ -7,8 +7,8 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import com.diffy.broke.BuildConfig
-import com.diffy.broke.presentation.core.ui.theme.conf.DarkTheme
-import com.diffy.broke.presentation.core.ui.theme.conf.ThemeType
+import com.diffy.broke.presentation.core.theme.conf.DarkTheme
+import com.diffy.broke.presentation.core.theme.conf.ThemeType
 import com.diffy.settings.ui.core.SettingsExt
 
 data class SettingsGroup(

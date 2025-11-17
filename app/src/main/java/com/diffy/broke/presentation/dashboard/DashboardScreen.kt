@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
 import com.diffy.broke.presentation.core.LocalNavController
 import com.diffy.broke.presentation.core.templates.ScaffoldTemplate
-import com.diffy.broke.presentation.core.ui.Route
+import com.diffy.broke.presentation.core.Route
 import com.diffy.broke.presentation.dashboard.components.BudgetCard
 import com.diffy.broke.presentation.dashboard.components.CategoryCard
 import com.diffy.broke.presentation.dashboard.components.MonthSwitcherCard

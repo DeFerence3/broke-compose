@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.diffy.broke.presentation.core.ui.theme.BrokeTheme
+import com.diffy.broke.presentation.core.theme.BrokeTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -4,7 +4,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import com.diffy.broke.presentation.core.ui.Route
+import com.diffy.broke.presentation.core.Route
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 

@@ -34,8 +34,8 @@ import com.diffy.broke.presentation.core.LocalNavController
 import com.diffy.broke.presentation.core.search.navigateBackWithResult
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.ScaffoldTemplate
-import com.diffy.broke.presentation.core.ui.components.BrokeDialog
-import com.diffy.broke.presentation.core.ui.util.ObserveEvent
+import com.diffy.broke.presentation.core.components.BrokeDialog
+import com.diffy.broke.presentation.core.util.ObserveEvent
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)

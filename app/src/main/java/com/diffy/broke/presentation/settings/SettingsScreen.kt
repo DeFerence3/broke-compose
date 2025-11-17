@@ -26,9 +26,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
-import com.diffy.broke.presentation.core.ui.theme.conf.DarkTheme
-import com.diffy.broke.presentation.core.ui.util.ObserveEvent
-import com.diffy.broke.presentation.core.ui.util.format
+import com.diffy.broke.presentation.core.theme.conf.DarkTheme
+import com.diffy.broke.presentation.core.util.ObserveEvent
+import com.diffy.broke.presentation.core.util.format
 import com.diffy.broke.presentation.settings.components.ContentedSettingItem
 import com.diffy.broke.presentation.settings.components.SettingItem
 import com.diffy.broke.presentation.settings.components.SettingsGroup

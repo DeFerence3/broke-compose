@@ -1,9 +1,9 @@
 package com.diffy.broke.presentation.settings.components
 
 import com.diffy.broke.Broke.Companion.applicationScope
-import com.diffy.broke.presentation.core.ui.theme.ThemePreference
-import com.diffy.broke.presentation.core.ui.theme.conf.DarkTheme
-import com.diffy.broke.presentation.core.ui.theme.conf.ThemeType
+import com.diffy.broke.presentation.core.theme.ThemePreference
+import com.diffy.broke.presentation.core.theme.conf.DarkTheme
+import com.diffy.broke.presentation.core.theme.conf.ThemeType
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

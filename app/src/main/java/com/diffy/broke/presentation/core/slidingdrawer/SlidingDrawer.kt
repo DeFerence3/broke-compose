@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.diffy.broke.R
-import com.diffy.broke.presentation.core.ui.navigation.NavigationDestinations
+import com.diffy.broke.presentation.core.navigation.NavigationDestinations
 
 @Composable
 fun SlidingDrawer(

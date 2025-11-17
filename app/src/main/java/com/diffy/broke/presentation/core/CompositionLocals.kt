@@ -4,7 +4,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
-import com.diffy.broke.presentation.core.ui.theme.ThemePreference
+import com.diffy.broke.presentation.core.theme.ThemePreference
 
 val LocalDeveloperMode = staticCompositionLocalOf { false }
 val LocalThemePreference = compositionLocalOf<ThemePreference>{
