@@ -7,6 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 open class Route(val title: String) {
     @Serializable
+    data object Dashboard: Route("Dashboard")
+
+    @Serializable
     data object Transaction: Route("Transaction")
 
     @Serializable

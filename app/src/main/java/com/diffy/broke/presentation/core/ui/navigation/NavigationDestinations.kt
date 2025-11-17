@@ -1,10 +1,14 @@
 package com.diffy.broke.presentation.core.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Summarize
 import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Money
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Summarize
@@ -17,6 +21,11 @@ enum class NavigationDestinations (
     val unselectedIcon: ImageVector,
     val route: Route
 ) {
+    DASHBOARD(
+        Icons.Filled.Dashboard,
+        Icons.Outlined.Dashboard,
+        Route.Dashboard
+    ),
     TRANSACTIONS(
         Icons.Filled.Money,
         Icons.Outlined.Money,
@@ -33,8 +42,8 @@ enum class NavigationDestinations (
         Route.Category(isSelect = false)
     ),
     TRANSACTION_GROUP(
-        Icons.Filled.Tag,
-        Icons.Outlined.Tag,
+        Icons.Filled.Folder,
+        Icons.Outlined.Folder,
         Route.TransactionGroup
     ),
     SETTINGS(

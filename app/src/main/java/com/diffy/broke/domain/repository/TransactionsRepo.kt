@@ -2,6 +2,7 @@ package com.diffy.broke.domain.repository
 
 import com.diffy.broke.data.entity.Transaction
 import com.diffy.broke.data.relations.TransactionWithCategory
+import com.diffy.broke.domain.model.OverView
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -21,5 +22,9 @@ interface TransactionsRepo {
 
     fun getAllTransaction(): Flow<List<TransactionWithCategory>>
     suspend fun deleteTransaction(transaction: Transaction)
+
+    fun getOverView(month: Int,year: Int): Flow<OverView>
+
+    fun getTodaySpend(): Flow<Double>
 
 }

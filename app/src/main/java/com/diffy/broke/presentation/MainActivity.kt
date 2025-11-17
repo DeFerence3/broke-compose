@@ -7,10 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import com.diffy.broke.data.backup.RoomBackup
 import com.diffy.broke.data.repository.setActivityContextProvider
 import com.diffy.broke.presentation.core.LocalThemePreference
+import com.diffy.broke.presentation.core.SlidingDrawer
 import com.diffy.broke.presentation.core.ui.theme.BrokeTheme
 import com.diffy.broke.presentation.core.ui.theme.SettingsProvider
 import com.diffy.broke.presentation.core.ui.theme.conf.ThemeType
-import com.diffy.broke.presentation.home.SlidingDrawer
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

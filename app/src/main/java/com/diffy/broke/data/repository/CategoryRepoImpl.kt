@@ -2,6 +2,7 @@ package com.diffy.broke.data.repository
 
 import com.diffy.broke.data.dao.CategoryDao
 import com.diffy.broke.data.entity.Category
+import com.diffy.broke.domain.model.CategorySpendM
 import com.diffy.broke.domain.repository.CategoryRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,4 +19,6 @@ class CategoryRepoImpl @Inject constructor(
     override suspend fun searchCategory(name: String): Flow<List<Category>> = flow {
         emit(categoryDao.searchCategory(name = name))
     }
+
+    override suspend fun getCategorySpend(month: Int,year: Int): Flow<List<CategorySpendM>> = categoryDao.getSpendsByCategory(month = month, year = year)
 }

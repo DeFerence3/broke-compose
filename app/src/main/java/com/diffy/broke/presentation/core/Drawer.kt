@@ -1,4 +1,4 @@
-package com.diffy.broke.presentation.home
+package com.diffy.broke.presentation.core
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.diffy.broke.presentation.core.LocalNavController
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawer
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.ui.navigation.NavigationDestinations
@@ -38,7 +37,7 @@ fun SlidingDrawer() {
     val density = LocalDensity.current.density
     val currentRouteName = navHostController.currentBackStackEntryAsState().value?.destination?.route
     var selectedNavigationItem by rememberSaveable{
-        mutableStateOf(NavigationDestinations.TRANSACTIONS)
+        mutableStateOf(NavigationDestinations.DASHBOARD)
     }
     var drawerState by remember { mutableStateOf(SlidingDrawerState.Closed) }
     val screenWidthDp = configuration.containerSize.width.dp

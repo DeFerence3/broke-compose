@@ -5,9 +5,11 @@ package com.diffy.broke.data.repository
 import androidx.room.Transaction
 import com.diffy.broke.data.dao.TransactionDao
 import com.diffy.broke.data.relations.TransactionWithCategory
+import com.diffy.broke.domain.model.OverView
 import com.diffy.broke.domain.repository.TransactionsRepo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -42,4 +44,8 @@ class TransactionsRepoImpl @Inject constructor(
     override suspend fun deleteTransaction(transaction: com.diffy.broke.data.entity.Transaction) {
         transactionDao.delete(transaction)
     }
+
+    override fun getOverView(month: Int, year: Int): Flow<OverView> = transactionDao.getOverView(month = month, year = year)
+
+    override fun getTodaySpend(): Flow<Double> = transactionDao.getSpendByDate(Clock.System.now())
 }
