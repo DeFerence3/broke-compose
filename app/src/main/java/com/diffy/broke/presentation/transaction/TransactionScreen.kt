@@ -5,6 +5,7 @@ package com.diffy.broke.presentation.transaction
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -41,9 +42,9 @@ import androidx.compose.ui.unit.dp
 import com.diffy.broke.R
 import com.diffy.broke.domain.model.Transaction
 import com.diffy.broke.domain.model.TransactionFormModes
+import com.diffy.broke.presentation.core.components.MainAppbarExtraContent
 import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.templates.OnShowDialog
-import com.diffy.broke.presentation.core.components.MainAppbarExtraContent
 import com.diffy.broke.presentation.transaction.components.AddEditDialog
 import com.diffy.broke.presentation.transaction.components.TransactionCard
 import kotlin.time.ExperimentalTime
@@ -104,24 +105,26 @@ fun TransactionScreen(
             )
         },
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.transaction)) },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            drawerClick(drawerState.opposite())
+            Column{
+                CenterAlignedTopAppBar(
+                    title = { Text(stringResource(R.string.transaction)) },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                drawerClick(drawerState.opposite())
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = stringResource(R.string.navigation_icon)
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = stringResource(R.string.navigation_icon)
-                        )
                     }
-                }
-            )
+                )
+                MainAppbarExtraContent(modifier = Modifier,state, onEvent)
+            }
         }
     ) { padding ->
-        MainAppbarExtraContent(modifier = Modifier.padding(padding),state, onEvent)
         if(state.loadingState || state.transactions.isEmpty()) {
             Box(
                 modifier = Modifier

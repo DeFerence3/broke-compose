@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,20 +25,32 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawer
-import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 import com.diffy.broke.presentation.core.navigation.NavigationDestinations
 import com.diffy.broke.presentation.core.navigation.SlidingDrawerContentHost
+import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawer
+import com.diffy.broke.presentation.core.slidingdrawer.SlidingDrawerState
 
 @Composable
 fun SlidingDrawer() {
     val navHostController = LocalNavController.current
     val configuration = LocalWindowInfo.current
     val density = LocalDensity.current.density
-    val currentRouteName = navHostController.currentBackStackEntryAsState().value?.destination?.route
-    var selectedNavigationItem by rememberSaveable{
-        mutableStateOf(NavigationDestinations.DASHBOARD)
+    val backStackEntry by navHostController.currentBackStackEntryAsState()
+    val destination = backStackEntry?.destination
+    var selectedNavigationItem by rememberSaveable { mutableStateOf(NavigationDestinations.DASHBOARD) }
+    LaunchedEffect(destination) {
+        val currNav = when{
+            (destination?.hasRoute<Route.Dashboard>() == true) -> Route.Dashboard
+            (destination?.hasRoute<Route.Transaction>() == true) -> Route.Transaction
+            (destination?.hasRoute<Route.Summary>() == true) -> Route.Summary
+            (destination?.hasRoute<Route.Category>() == true) -> Route.Category(false)
+            (destination?.hasRoute<Route.TransactionGroup>() == true) -> Route.TransactionGroup
+            (destination?.hasRoute<Route.Settings>() == true) -> Route.Settings
+            else -> Route.Dashboard
+        }
+        selectedNavigationItem = NavigationDestinations.entries.find { it.route == currNav } ?: NavigationDestinations.DASHBOARD
     }
     var drawerState by remember { mutableStateOf(SlidingDrawerState.Closed) }
     val screenWidthDp = configuration.containerSize.width.dp
@@ -70,7 +83,6 @@ fun SlidingDrawer() {
             selectedNavigationItem = selectedNavigationItem,
             onNavigationItemClick = {
                 drawerState = SlidingDrawerState.Closed
-                //selectedNavigationItem = it
                 navHostController.navigate(it.route) {
                     popUpTo(navHostController.graph.startDestinationId)
                     launchSingleTop = true
